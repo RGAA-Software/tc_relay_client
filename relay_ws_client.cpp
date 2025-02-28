@@ -6,16 +6,15 @@
 #include "tc_common_new/log.h"
 #include <asio2/websocket/ws_client.hpp>
 #include <asio2/asio2.hpp>
+#include "relay_message.pb.h"
 
 namespace tc
 {
 
     const int kMaxClientQueuedMessage = 4096;
 
-    RelayWsClient::RelayWsClient(const std::string& host, int port, const std::string& path) {
-        this->host_ = host;
-        this->port_ = port;
-        this->path_ = path;
+    RelayWsClient::RelayWsClient(const RelayClientSdkParam& param) {
+        sdk_param_ = param;
     }
 
     RelayWsClient::~RelayWsClient() {
@@ -42,11 +41,11 @@ namespace tc
         }).bind_connect([=, this]() {
             if (asio2::get_last_error()) {
                 LOGE("connect failure : {} {} [ {} - {} - {}]",
-                     asio2::last_error_val(), asio2::last_error_msg().c_str(), host_, port_, path_);
+                     asio2::last_error_val(), asio2::last_error_msg().c_str(), sdk_param_.host_, sdk_param_.port_, sdk_param_.path_);
             } else {
                 LOGI("connect success : {} {} ", client_->local_address().c_str(), client_->local_port());
                 client_->post_queued_event([=, this]() {
-
+                    this->SendHello();
                 });
             }
         }).bind_disconnect([this]() {
@@ -56,11 +55,14 @@ namespace tc
                 LOGE("upgrade failure : {}, {}", asio2::last_error_val(), asio2::last_error_msg());
             }
         }).bind_recv([=, this](std::string_view data) {
-            std::string cpy_data(data.data(), data.size());
+            if (msg_cbk_) {
+                std::string cpy_data(data.data(), data.size());
+                msg_cbk_(cpy_data);
+            }
         });
 
         // the /ws is the websocket upgraged target
-        if (!client_->async_start(this->host_, this->port_, this->path_)) {
+        if (!client_->async_start(sdk_param_.host_, sdk_param_.port_, sdk_param_.path_)) {
             LOGE("connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
         }
     }
@@ -91,9 +93,30 @@ namespace tc
         return client_ && client_->is_started();
     }
 
+    void RelayWsClient::SetOnRelayProtoMessageCallback(std::function<void(const std::string&)>&& cbk) {
+        msg_cbk_ = cbk;
+    }
+
+    void RelayWsClient::SyncDeviceId(const std::string& device_id) {
+        sdk_param_.device_id_ = device_id;
+    }
+
+    void RelayWsClient::SendHello() {
+        RelayMessage rl_msg;
+        rl_msg.set_device_id(sdk_param_.device_id_);
+        auto sub = rl_msg.mutable_hello();
+        auto msg = rl_msg.SerializeAsString();
+        PostBinaryMessage(msg);
+    }
+
     void RelayWsClient::HeartBeat() {
-        //todo:
-        PostBinaryMessage("ddfb");
+        RelayMessage rl_msg;
+        rl_msg.set_device_id(sdk_param_.device_id_);
+        auto sub = rl_msg.mutable_heartbeat();
+        static int64_t hb_ibx = 0;
+        sub->set_index(hb_ibx++);
+        auto msg = rl_msg.SerializeAsString();
+        PostBinaryMessage(msg);
     }
 
 }

@@ -16,6 +16,7 @@ namespace tc
         int port_{0};
         std::string path_;
         bool ssl_ = false;
+        std::string device_id_;
     };
 
 
