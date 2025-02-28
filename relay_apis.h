@@ -1,0 +1,8 @@
+//
+// Created by RGAA on 28/02/2025.
+//
+
+#ifndef GAMMARAY_RELAY_APIS_H
+#define GAMMARAY_RELAY_APIS_H
+
+#endif //GAMMARAY_RELAY_APIS_H
