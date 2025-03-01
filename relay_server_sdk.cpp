@@ -59,7 +59,7 @@ namespace tc
         if (rooms_.Size() <= 0) {
             return;
         }
-        
+
         RelayMessage rl_msg;
         rl_msg.set_from_device_id(sdk_param_.device_id_);
         rl_msg.set_type(RelayMessageType::kRelayTargetMessage);

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <functional>
+#include "relay_callbacks.h"
 #include "relay_client_sdk_param.h"
 #include "tc_common_new/concurrent_hashmap.h"
 
@@ -15,7 +16,7 @@ namespace tc
 
     class RelayRoom;
     class RelayContext;
-    class RelayWsClient;
+    class RelayNetClient;
     class RelayMessage;
 
     // Only connect to one remote
@@ -26,6 +27,8 @@ namespace tc
         void Stop();
         void SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<RelayMessage>&)>&& cbk);
         void RelayProtoMessage(const std::string& msg);
+
+        std::shared_ptr<RelayNetClient> GetNetClient();
 
         // send from client
         void RequestCreateRoom();
@@ -53,7 +56,7 @@ namespace tc
     private:
         std::shared_ptr<RelayContext> context_ = nullptr;
         RelayClientSdkParam sdk_param_;
-        std::shared_ptr<RelayWsClient> ws_client_ = nullptr;
+        std::shared_ptr<RelayNetClient> ws_client_ = nullptr;
         std::shared_ptr<RelayRoom> room_ = nullptr;
     };
 }

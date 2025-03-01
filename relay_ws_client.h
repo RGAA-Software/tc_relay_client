@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 #include <functional>
+#include "relay_callbacks.h"
+#include "relay_net_client.h"
 
 namespace asio2 {
     class ws_client;
@@ -17,15 +19,14 @@ namespace asio2 {
 namespace tc
 {
 
-    class RelayWsClient {
+    class RelayWsClient : public RelayNetClient {
     public:
         explicit RelayWsClient(const std::string& host, int port, const std::string& device_id);
-        ~RelayWsClient();
-        void Start();
-        void Stop();
-        void PostBinaryMessage(const std::string &msg);
-        void SetOnRelayProtoMessageCallback(std::function<void(const std::string&)>&& cbk);
-        void SyncDeviceId(const std::string& device_id);
+        ~RelayWsClient() override;
+        void Start() override;
+        void Stop() override;
+        void PostBinaryMessage(const std::string &msg) override;
+        void SyncDeviceId(const std::string& device_id) override;
 
     private:
         bool IsAlive();
@@ -38,7 +39,7 @@ namespace tc
         std::string device_id_;
         std::shared_ptr<asio2::ws_client> client_ = nullptr;
         std::atomic_int queued_msg_count_ = 0;
-        std::function<void(const std::string&)> msg_cbk_;
+
     };
 
 }
