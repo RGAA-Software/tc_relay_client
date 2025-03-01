@@ -6,6 +6,7 @@
 #define GAMMARAY_MGR_CLIENT_SDK_PARAM_H
 
 #include <string>
+#include <functional>
 
 namespace tc
 {
@@ -20,7 +21,6 @@ namespace tc
         // Has value in client
         std::string remote_device_id_;
     };
-
 
 }
 

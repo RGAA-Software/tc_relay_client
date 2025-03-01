@@ -37,6 +37,10 @@ namespace tc
         }
     }
 
+    std::shared_ptr<RelayNetClient> RelayClientSdk::GetNetClient() {
+        return ws_client_;
+    }
+
     void RelayClientSdk::RelayProtoMessage(const std::string& msg) {
         if (!room_) {
             LOGE("Can't relay message, room is null.");

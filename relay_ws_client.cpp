@@ -13,7 +13,7 @@ namespace tc
 
     const int kMaxClientQueuedMessage = 4096;
 
-    RelayWsClient::RelayWsClient(const std::string& host, int port, const std::string& device_id) {
+    RelayWsClient::RelayWsClient(const std::string& host, int port, const std::string& device_id) : RelayNetClient() {
         this->host_ = host;
         this->port_ = port;
         this->device_id_ = device_id;
@@ -94,10 +94,6 @@ namespace tc
 
     bool RelayWsClient::IsAlive() {
         return client_ && client_->is_started();
-    }
-
-    void RelayWsClient::SetOnRelayProtoMessageCallback(std::function<void(const std::string&)>&& cbk) {
-        msg_cbk_ = cbk;
     }
 
     void RelayWsClient::SyncDeviceId(const std::string& device_id) {
