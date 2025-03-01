@@ -47,11 +47,16 @@ namespace tc
             } else {
                 LOGI("connect success : {} {} ", client_->local_address().c_str(), client_->local_port());
                 client_->post_queued_event([=, this]() {
+                    if (srv_conn_cbk_) {
+                        srv_conn_cbk_();
+                    }
                     this->SendHello();
                 });
             }
         }).bind_disconnect([this]() {
-
+            if (srv_dis_conn_cbk_) {
+                srv_dis_conn_cbk_();
+            }
         }).bind_upgrade([]() {
             if (asio2::get_last_error()) {
                 LOGE("upgrade failure : {}, {}", asio2::last_error_val(), asio2::last_error_msg());
