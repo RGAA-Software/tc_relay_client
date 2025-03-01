@@ -89,6 +89,14 @@ namespace tc
             return nullptr;
         }
 
+        auto type = rl_msg->type();
+        if (type == RelayMessageType::kRelayRequestControl) {
+            this->OnRequestControl(rl_msg);
+        }
+        else if (type == RelayMessageType::kRelayRoomPrepared) {
+            this->OnRoomPrepared(rl_msg);
+        }
+
         return rl_msg;
     }
 
@@ -106,6 +114,7 @@ namespace tc
         sub->set_remote_device_id(rc.remote_device_id());
         sub->set_room_id(rc.room_id());
         sub->set_message("ok");
+        sub->set_under_control(true);
         auto resp_msg = rl_msg.SerializeAsString();
         this->PostBinMessage(resp_msg);
     }

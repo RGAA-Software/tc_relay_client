@@ -15,14 +15,48 @@ namespace tc
         ws_client_ = std::make_shared<RelayWsClient>(sdk_param_.host_, sdk_param_.port_, sdk_param_.device_id_);
     }
 
+    void RelayClientSdk::SetOnRelayServerConnectedCallback(OnRelayServerConnected&& cbk) {
+        ws_client_->SetOnRelayServerConnectedCallback([=, this]() {
+            cbk();
+            LOGI("connected to relay server, will create room.");
+            this->RequestCreateRoom();
+        });
+    }
+
+    void RelayClientSdk::SetOnRelayServerDisConnectedCallback(OnRelayServerDisConnected&& cbk) {
+        ws_client_->SetOnRelayServerDisConnectedCallback([=, this]() {
+            cbk();
+        });
+    }
+
     void RelayClientSdk::SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<RelayMessage>&)>&& cbk) {
         ws_client_->SetOnRelayProtoMessageCallback([=, this](const std::string& msg) {
-            auto proto_msg = ProcessProtoMessage(msg);
-            if (proto_msg) {
-                cbk(proto_msg);
+            auto rl_msg = ProcessProtoMessage(msg);
+            if (rl_msg) {
+                cbk(rl_msg);
             }
             else {
                 LOGE("Parse relay proto message failed!");
+                return;
+            }
+
+            auto type = rl_msg->type();
+            if (type == RelayMessageType::kRelayCreateRoomResp) {
+                this->OnCreatedRoomResp(rl_msg);
+                LOGI("will request control.");
+                this->RequestControl();
+            }
+            else if (type == RelayMessageType::kRelayRequestControlResp) {
+                this->OnRequestControlResp(rl_msg);
+            }
+            else if (type == RelayMessageType::kRelayRequestStopResp) {
+                this->OnRequestStopRelayResp(rl_msg);
+            }
+            else if (type == RelayMessageType::kRelayError) {
+                this->OnErrorMessage(rl_msg);
+            }
+            else if (type == RelayMessageType::kRelayRoomPrepared) {
+                this->OnRoomPrepared(rl_msg);
             }
         });
     }
@@ -43,7 +77,7 @@ namespace tc
 
     void RelayClientSdk::RelayProtoMessage(const std::string& msg) {
         if (!room_) {
-            LOGE("Can't relay message, room is null.");
+            //LOGE("Can't relay message, room is null.");
             return;
         }
         // msg : tc::Message
@@ -82,6 +116,7 @@ namespace tc
         sub->set_device_id(sdk_param_.device_id_);
         sub->set_remote_device_id(sdk_param_.remote_device_id_);
         this->PostBinMessage(rl_msg.SerializeAsString());
+        LOGI("create room sent, device id: {}, remote device id: {}", sdk_param_.device_id_, sdk_param_.remote_device_id_);
     }
 
     // received from server
@@ -89,6 +124,9 @@ namespace tc
         auto cr = msg->create_room_resp();
         room_ = std::make_shared<RelayRoom>();
         room_->room_id_ = cr.room_id();
+        room_->device_id_ = cr.device_id();
+        room_->remote_device_id_ = cr.remote_device_id();
+        LOGI("on create room response, device id: {}, remote device id: {}, room id: {}", sdk_param_.device_id_, sdk_param_.remote_device_id_, room_->room_id_);
     }
 
     // send from client
@@ -108,7 +146,7 @@ namespace tc
 
     // received from server
     void RelayClientSdk::OnRequestControlResp(const std::shared_ptr<RelayMessage>& msg) {
-
+        LOGI("On request control resp!!");
     }
 
     // send from client
@@ -131,8 +169,14 @@ namespace tc
         // todo: callback it.
     }
 
+    void RelayClientSdk::OnErrorMessage(const std::shared_ptr<RelayMessage>& msg) {
+        auto re = msg->relay_error();
+        LOGI("OnErrorMessage, code: {}, msg: {}, which: {}", (int)re.code(), re.message(), (int)re.which_message());
+    }
+
     void RelayClientSdk::OnRoomPrepared(const std::shared_ptr<RelayMessage>& msg) {
         auto in_room_id = msg->room_prepared().room_id();
+        LOGI("Room prepared, room id: {}", in_room_id);
         if (!room_ || room_->room_id_ != in_room_id) {
             LOGE("Can't process RoomPrepared, room is null! {}", in_room_id);
             return;
@@ -140,6 +184,7 @@ namespace tc
         auto rp = msg->room_prepared();
         room_->device_id_ = rp.device_id();
         room_->remote_device_id_ = rp.remote_device_id();
+        LOGI("Room prepared: {}, {} ", room_->device_id_, room_->remote_device_id_);
     }
 
     void RelayClientSdk::OnRoomInfoChanged(const std::shared_ptr<RelayMessage>& msg) {

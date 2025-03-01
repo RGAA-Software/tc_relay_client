@@ -25,6 +25,9 @@ namespace tc
         explicit RelayClientSdk(const RelayClientSdkParam& param);
         void Start();
         void Stop();
+        void SetOnRelayServerConnectedCallback(OnRelayServerConnected&& cbk);
+        void SetOnRelayServerDisConnectedCallback(OnRelayServerDisConnected&& cbk);
+        void SetOnRelayProtoMessageCallback(std::function<void(const std::string&)>&& cbk);
         void SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<RelayMessage>&)>&& cbk);
         void RelayProtoMessage(const std::string& msg);
 
@@ -44,6 +47,9 @@ namespace tc
         void RequestStopRelay();
         // received from server
         void OnRequestStopRelayResp(const std::shared_ptr<RelayMessage>& msg);
+
+        // received from server
+        void OnErrorMessage(const std::shared_ptr<RelayMessage>& msg);
 
     private:
         void PostBinMessage(const std::string& msg);
