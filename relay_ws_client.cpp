@@ -13,8 +13,10 @@ namespace tc
 
     const int kMaxClientQueuedMessage = 4096;
 
-    RelayWsClient::RelayWsClient(const RelayClientSdkParam& param) {
-        sdk_param_ = param;
+    RelayWsClient::RelayWsClient(const std::string& host, int port, const std::string& device_id) {
+        this->host_ = host;
+        this->port_ = port;
+        this->device_id_ = device_id;
     }
 
     RelayWsClient::~RelayWsClient() {
@@ -41,7 +43,7 @@ namespace tc
         }).bind_connect([=, this]() {
             if (asio2::get_last_error()) {
                 LOGE("connect failure : {} {} [ {} - {} - {}]",
-                     asio2::last_error_val(), asio2::last_error_msg().c_str(), sdk_param_.host_, sdk_param_.port_, sdk_param_.path_);
+                     asio2::last_error_val(), asio2::last_error_msg().c_str(),host_, port_, device_id_);
             } else {
                 LOGI("connect success : {} {} ", client_->local_address().c_str(), client_->local_port());
                 client_->post_queued_event([=, this]() {
@@ -62,7 +64,9 @@ namespace tc
         });
 
         // the /ws is the websocket upgraged target
-        if (!client_->async_start(sdk_param_.host_, sdk_param_.port_, sdk_param_.path_)) {
+        auto ws_path = std::format("/relay?device_id={}", device_id_);
+        LOGI("Will connect: {}:{}{}", host_, port_, ws_path);
+        if (!client_->async_start(host_, port_, ws_path)) {
             LOGE("connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());
         }
     }
@@ -83,7 +87,6 @@ namespace tc
             return;
         }
         queued_msg_count_++;
-        LOGI("Post message: {}", msg);
         client_->async_send(msg, [this]() {
             queued_msg_count_--;
         });
@@ -98,12 +101,12 @@ namespace tc
     }
 
     void RelayWsClient::SyncDeviceId(const std::string& device_id) {
-        sdk_param_.device_id_ = device_id;
+        this->device_id_ = device_id;
     }
 
     void RelayWsClient::SendHello() {
         RelayMessage rl_msg;
-        rl_msg.set_device_id(sdk_param_.device_id_);
+        rl_msg.set_from_device_id(this->device_id_);
         auto sub = rl_msg.mutable_hello();
         auto msg = rl_msg.SerializeAsString();
         PostBinaryMessage(msg);
@@ -111,7 +114,7 @@ namespace tc
 
     void RelayWsClient::HeartBeat() {
         RelayMessage rl_msg;
-        rl_msg.set_device_id(sdk_param_.device_id_);
+        rl_msg.set_from_device_id(this->device_id_);
         auto sub = rl_msg.mutable_heartbeat();
         static int64_t hb_ibx = 0;
         sub->set_index(hb_ibx++);

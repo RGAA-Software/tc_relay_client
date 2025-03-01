@@ -17,6 +17,8 @@ namespace tc
         std::string path_;
         bool ssl_ = false;
         std::string device_id_;
+        // Has value in client
+        std::string remote_device_id_;
     };
 
 
