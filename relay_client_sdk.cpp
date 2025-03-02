@@ -91,6 +91,7 @@ namespace tc
         relay->set_payload(msg);
 
         this->PostBinMessage(rl_msg.SerializeAsString());
+        //LOGI("Relay from: {} to room: {}", sdk_param_.device_id_, room_->room_id_);
     }
 
     void RelayClientSdk::PostBinMessage(const std::string& msg) {
