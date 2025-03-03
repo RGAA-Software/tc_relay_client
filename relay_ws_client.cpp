@@ -27,7 +27,7 @@ namespace tc
         client_ = std::make_shared<asio2::ws_client>();
         client_->set_auto_reconnect(true);
         client_->set_timeout(std::chrono::milliseconds(2000));
-        client_->start_timer("ws-heartbeat", std::chrono::seconds(1), [=, this]() {
+        client_->start_timer("ws-heartbeat", std::chrono::seconds(2), [=, this]() {
             this->HeartBeat();
         });
 
@@ -111,6 +111,7 @@ namespace tc
             return;
         }
         RelayMessage rl_msg;
+        rl_msg.set_type(RelayMessageType::kRelayHello);
         rl_msg.set_from_device_id(this->device_id_);
         auto sub = rl_msg.mutable_hello();
         auto msg = rl_msg.SerializeAsString();
@@ -122,6 +123,7 @@ namespace tc
             return;
         }
         RelayMessage rl_msg;
+        rl_msg.set_type(RelayMessageType::kRelayHeartBeat);
         rl_msg.set_from_device_id(this->device_id_);
         auto sub = rl_msg.mutable_heartbeat();
         static int64_t hb_ibx = 0;
