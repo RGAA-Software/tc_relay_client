@@ -80,6 +80,7 @@ namespace tc
         if (client_ && client_->is_started()) {
             client_->stop_all_timers();
             client_->stop();
+            client_ = nullptr;
         }
     }
 
@@ -106,6 +107,9 @@ namespace tc
     }
 
     void RelayWsClient::SendHello() {
+        if (!IsAlive()) {
+            return;
+        }
         RelayMessage rl_msg;
         rl_msg.set_from_device_id(this->device_id_);
         auto sub = rl_msg.mutable_hello();
@@ -114,6 +118,9 @@ namespace tc
     }
 
     void RelayWsClient::HeartBeat() {
+        if (!IsAlive()) {
+            return;
+        }
         RelayMessage rl_msg;
         rl_msg.set_from_device_id(this->device_id_);
         auto sub = rl_msg.mutable_heartbeat();

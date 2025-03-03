@@ -27,6 +27,18 @@ namespace tc
         }
     }
 
+    void RelayServerSdk::SetOnConnectedCallback(OnRelayServerConnected&& cbk) {
+        ws_client_->SetOnRelayServerConnectedCallback([=, this]() {
+            cbk();
+        });
+    }
+
+    void RelayServerSdk::SetOnDisConnectedCallback(OnRelayServerDisConnected&& cbk) {
+        ws_client_->SetOnRelayServerDisConnectedCallback([=, this]() {
+            cbk();
+        });
+    }
+
     void RelayServerSdk::SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<RelayMessage>&)>&& cbk) {
         ws_client_->SetOnRelayProtoMessageCallback([=, this](const std::string& msg) {
             auto proto_msg = ProcessProtoMessage(msg);
