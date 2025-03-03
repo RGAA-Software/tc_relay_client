@@ -108,6 +108,9 @@ namespace tc
         else if (type == RelayMessageType::kRelayRoomPrepared) {
             this->OnRoomPrepared(rl_msg);
         }
+        else if (type == RelayMessageType::kRelayRoomDestroyed) {
+            this->OnRoomDestroyed(rl_msg);
+        }
 
         return rl_msg;
     }
@@ -155,6 +158,6 @@ namespace tc
     void RelayServerSdk::OnRoomDestroyed(const std::shared_ptr<RelayMessage>& msg) {
         auto rd = msg->room_destroyed();
         rooms_.Remove(rd.room_id());
-
+        LOGI("ROOM Destroyed: {}", rd.room_id());
     }
 }
