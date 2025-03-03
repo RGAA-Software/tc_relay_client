@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <functional>
+#include "relay_callbacks.h"
 #include "relay_server_sdk_param.h"
 #include "tc_common_new/concurrent_hashmap.h"
 
@@ -22,6 +23,8 @@ namespace tc
         explicit RelayServerSdk(const RelayServerSdkParam& param);
         void Start();
         void Stop();
+        void SetOnConnectedCallback(OnRelayServerConnected&& cbk);
+        void SetOnDisConnectedCallback(OnRelayServerDisConnected && cbk);
         void SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<RelayMessage>&)>&& cbk);
         void RelayProtoMessage(const std::string& msg);
         void RelayProtoMessage(const std::string& stream_id, const std::string& msg);
