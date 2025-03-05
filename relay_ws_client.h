@@ -19,7 +19,7 @@ namespace asio2 {
 namespace tc
 {
 
-    class RelayWsClient : public RelayNetClient {
+    class RelayWsClient : public RelayNetClient, public std::enable_shared_from_this<RelayWsClient> {
     public:
         explicit RelayWsClient(const std::string& host, int port, const std::string& device_id);
         ~RelayWsClient() override;

@@ -51,7 +51,19 @@ namespace tc
         });
     }
 
+    void RelayServerSdk::SetOnRoomPreparedCallback(OnRelayRoomPrepared&& cbk) {
+        room_prepared_cbk_ = cbk;
+    }
+
+    void RelayServerSdk::SetOnRoomDestroyedCallback(OnRelayRoomDestroyed&& cbk) {
+        room_destroyed_cbk_ = cbk;
+    }
+
     void RelayServerSdk::RelayProtoMessage(const std::string& msg) {
+        if (rooms_.Size() <= 0) {
+            return;
+        }
+
         // msg : tc::Message
         // rl_msg : tc::RelayMessage
         RelayMessage rl_msg;
@@ -107,9 +119,15 @@ namespace tc
         }
         else if (type == RelayMessageType::kRelayRoomPrepared) {
             this->OnRoomPrepared(rl_msg);
+            if (room_prepared_cbk_) {
+                room_prepared_cbk_();
+            }
         }
         else if (type == RelayMessageType::kRelayRoomDestroyed) {
             this->OnRoomDestroyed(rl_msg);
+            if (room_destroyed_cbk_) {
+                room_destroyed_cbk_();
+            }
         }
 
         return rl_msg;

@@ -14,6 +14,8 @@ namespace tc
 
     using OnRelayServerConnected = std::function<void()>;
     using OnRelayServerDisConnected = std::function<void()>;
+    using OnRelayRoomPrepared = std::function<void()>;
+    using OnRelayRoomDestroyed = std::function<void()>;
 
 }
 
