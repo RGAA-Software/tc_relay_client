@@ -26,6 +26,9 @@ namespace tc
         void SetOnConnectedCallback(OnRelayServerConnected&& cbk);
         void SetOnDisConnectedCallback(OnRelayServerDisConnected && cbk);
         void SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<RelayMessage>&)>&& cbk);
+        void SetOnRoomPreparedCallback(OnRelayRoomPrepared&& cbk);
+        void SetOnRoomDestroyedCallback(OnRelayRoomDestroyed&& cbk);
+
         void RelayProtoMessage(const std::string& msg);
         void RelayProtoMessage(const std::string& stream_id, const std::string& msg);
         void SyncDeviceId(const std::string& device_id);
@@ -45,6 +48,8 @@ namespace tc
         RelayServerSdkParam sdk_param_;
         std::shared_ptr<RelayWsClient> ws_client_ = nullptr;
         tc::ConcurrentHashMap<std::string, std::shared_ptr<RelayRoom>> rooms_;
+        OnRelayRoomPrepared room_prepared_cbk_;
+        OnRelayRoomDestroyed room_destroyed_cbk_;
     };
 
 }
