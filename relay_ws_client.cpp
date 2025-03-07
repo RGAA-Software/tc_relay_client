@@ -4,14 +4,13 @@
 
 #include "relay_ws_client.h"
 #include "tc_common_new/log.h"
+#include "tc_common_new/thread_util.h"
 #include <asio2/websocket/ws_client.hpp>
 #include <asio2/asio2.hpp>
 #include "relay_message.pb.h"
 
 namespace tc
 {
-
-    const int kMaxClientQueuedMessage = 4096;
 
     RelayWsClient::RelayWsClient(const std::string& host, int port, const std::string& device_id) : RelayNetClient() {
         this->host_ = host;
@@ -35,7 +34,6 @@ namespace tc
 
         client_->bind_init([thiz = std::weak_ptr(shared_from_this())]() {
             if (auto self = thiz.lock(); self && self->client_) {
-                self->client_->ws_stream().binary(true);
                 self->client_->set_no_delay(true);
                 self->client_->ws_stream().set_option(
                         websocket::stream_base::decorator([](websocket::request_type &req) {
@@ -98,13 +96,42 @@ namespace tc
         if (!IsAlive()) {
             return;
         }
-        if (queued_msg_count_ > kMaxClientQueuedMessage) {
-            LOGW("You've queued too many messages!");
+
+        client_->post_queued_event([=, this]() {
+            auto tid = tc::GetCurrentThreadID();
+            if (post_thread_id_ == 0) {
+                post_thread_id_ = tid;
+            }
+            if (tid != post_thread_id_) {
+                LOGI("OH NO! Post binary message in thread: {}, but the last thread is: {}", tid, post_thread_id_);
+            }
+
+            client_->ws_stream().binary(true);
+            queued_msg_count_++;
+            client_->async_send(msg, [this]() {
+                queued_msg_count_--;
+            });
+        });
+    }
+
+    void RelayWsClient::PostTextMessage(const std::string& msg) {
+        if (!IsAlive()) {
             return;
         }
-        queued_msg_count_++;
-        client_->async_send(msg, [this]() {
-            queued_msg_count_--;
+        client_->post_queued_event([=, this]() {
+            auto tid = tc::GetCurrentThreadID();
+            if (post_thread_id_ == 0) {
+                post_thread_id_ = tid;
+            }
+            if (tid != post_thread_id_) {
+                LOGI("OH NO! Post binary message in thread: {}, but the last thread is: {}", tid, post_thread_id_);
+            }
+
+            client_->ws_stream().text(true);
+            queued_msg_count_++;
+            client_->async_send(msg, [this]() {
+                queued_msg_count_--;
+            });
         });
     }
 
