@@ -26,6 +26,10 @@ namespace tc
 
         }
 
+        virtual void PostTextMessage(const std::string& msg) {
+
+        }
+
         virtual void SyncDeviceId(const std::string& device_id) {
 
         }
