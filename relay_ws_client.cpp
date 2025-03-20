@@ -85,7 +85,7 @@ namespace tc
     }
 
     void RelayWsClient::Stop() {
-        if (client_ && client_->is_started()) {
+        if (client_) {
             client_->stop_all_timers();
             client_->stop();
             client_ = nullptr;
