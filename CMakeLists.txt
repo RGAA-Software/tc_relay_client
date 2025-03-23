@@ -9,4 +9,9 @@ set(SRCS
 )
 
 add_library(${PROJECT_NAME} ${SRCS})
-target_link_libraries(${PROJECT_NAME} tc_relay_message libprotobuf)
+if(ANDROID)
+    find_package(Protobuf REQUIRED)
+    target_link_libraries(${PROJECT_NAME} tc_relay_message protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite)
+else ()
+    target_link_libraries(${PROJECT_NAME} tc_relay_message libprotobuf)
+endif ()
