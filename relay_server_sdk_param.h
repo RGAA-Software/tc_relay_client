@@ -6,15 +6,10 @@
 #define GAMMARAY_RELAY_SERVER_SDK_PARAM_H
 
 #include <string>
+#include "relay_device_info.h"
 
 namespace tc
 {
-    //
-    class RelayDeviceNetInfo {
-    public:
-        std::string ip_;
-        std::string mac_;
-    };
 
     // RelayServerSdkParam
     class RelayServerSdkParam {

@@ -15,6 +15,7 @@ namespace tc
     RelayServerSdk::RelayServerSdk(const RelayServerSdkParam& param) {
         sdk_param_ = param;
         ws_client_ = std::make_shared<RelayWsClient>(sdk_param_.host_, sdk_param_.port_, sdk_param_.device_id_);
+        ws_client_->SetDeviceNetInfo(param.net_info_);
     }
 
     void RelayServerSdk::Start() {
