@@ -38,10 +38,9 @@ namespace tc
             if (auto self = thiz.lock(); self && self->client_) {
                 self->client_->set_no_delay(true);
                 self->client_->ws_stream().set_option(
-                        websocket::stream_base::decorator([](websocket::request_type &req) {
-                                                              req.set(http::field::authorization, "websocket-client-authorization");
-                                                          }
-                        )
+                    websocket::stream_base::decorator([](websocket::request_type &req) {
+                        req.set(http::field::authorization, "websocket-client-authorization");
+                    })
                 );
             }
         }).bind_connect([thiz = std::weak_ptr(shared_from_this())]() {
@@ -153,6 +152,11 @@ namespace tc
         rl_msg.set_type(RelayMessageType::kRelayHello);
         rl_msg.set_from_device_id(this->device_id_);
         auto sub = rl_msg.mutable_hello();
+        for (const auto& info : net_info_) {
+            auto ni = sub->mutable_net_info()->Add();
+            ni->set_ip(info.ip_);
+            ni->set_mac(info.mac_);
+        }
         auto msg = rl_msg.SerializeAsString();
         PostBinaryMessage(msg);
     }
@@ -167,8 +171,17 @@ namespace tc
         auto sub = rl_msg.mutable_heartbeat();
         static int64_t hb_ibx = 0;
         sub->set_index(hb_ibx++);
+        for (const auto& info : net_info_) {
+            auto ni = sub->mutable_net_info()->Add();
+            ni->set_ip(info.ip_);
+            ni->set_mac(info.mac_);
+        }
         auto msg = rl_msg.SerializeAsString();
         PostBinaryMessage(msg);
+    }
+
+    void RelayWsClient::SetDeviceNetInfo(const std::vector<tc::RelayDeviceNetInfo>& info) {
+        net_info_ = info;
     }
 
 }
