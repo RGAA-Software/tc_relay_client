@@ -9,6 +9,13 @@
 
 namespace tc
 {
+    //
+    class RelayDeviceNetInfo {
+    public:
+        std::string ip_;
+        std::string mac_;
+    };
+
     // RelayServerSdkParam
     class RelayServerSdkParam {
     public:
@@ -16,6 +23,7 @@ namespace tc
         int port_{0};
         bool ssl_ = false;
         std::string device_id_;
+        std::vector<RelayDeviceNetInfo> net_info_;
     };
 
 
