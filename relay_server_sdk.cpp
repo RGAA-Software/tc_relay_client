@@ -7,6 +7,8 @@
 #include "relay_message.pb.h"
 #include "relay_room.h"
 
+using namespace relay;
+
 namespace tc
 {
 

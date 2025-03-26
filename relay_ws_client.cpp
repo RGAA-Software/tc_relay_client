@@ -9,6 +9,8 @@
 #include <asio2/asio2.hpp>
 #include "relay_message.pb.h"
 
+using namespace relay;
+
 namespace tc
 {
 

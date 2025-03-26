@@ -11,12 +11,16 @@
 #include "relay_server_sdk_param.h"
 #include "tc_common_new/concurrent_hashmap.h"
 
+namespace relay
+{
+    class RelayMessage;
+}
+
 namespace tc
 {
     class RelayRoom;
     class RelayContext;
     class RelayWsClient;
-    class RelayMessage;
 
     class RelayServerSdk {
     public:
@@ -25,7 +29,7 @@ namespace tc
         void Stop();
         void SetOnConnectedCallback(OnRelayServerConnected&& cbk);
         void SetOnDisConnectedCallback(OnRelayServerDisConnected && cbk);
-        void SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<RelayMessage>&)>&& cbk);
+        void SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<relay::RelayMessage>&)>&& cbk);
         void SetOnRoomPreparedCallback(OnRelayRoomPrepared&& cbk);
         void SetOnRoomDestroyedCallback(OnRelayRoomDestroyed&& cbk);
 
@@ -35,13 +39,13 @@ namespace tc
 
     private:
         void PostBinMessage(const std::string& msg);
-        std::shared_ptr<RelayMessage> ProcessProtoMessage(const std::string& msg);
+        std::shared_ptr<relay::RelayMessage> ProcessProtoMessage(const std::string& msg);
         // request to control this device
-        void OnRequestControl(const std::shared_ptr<RelayMessage>& msg);
+        void OnRequestControl(const std::shared_ptr<relay::RelayMessage>& msg);
 
-        void OnRoomPrepared(const std::shared_ptr<RelayMessage>& msg);
-        void OnRoomInfoChanged(const std::shared_ptr<RelayMessage>& msg);
-        void OnRoomDestroyed(const std::shared_ptr<RelayMessage>& msg);
+        void OnRoomPrepared(const std::shared_ptr<relay::RelayMessage>& msg);
+        void OnRoomInfoChanged(const std::shared_ptr<relay::RelayMessage>& msg);
+        void OnRoomDestroyed(const std::shared_ptr<relay::RelayMessage>& msg);
 
     private:
         std::shared_ptr<RelayContext> context_ = nullptr;
