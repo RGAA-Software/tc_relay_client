@@ -37,6 +37,8 @@ namespace tc
         void RelayProtoMessage(const std::string& stream_id, const std::string& msg);
         void SyncDeviceId(const std::string& device_id);
 
+        int64_t GetQueuingMsgCount();
+
     private:
         void PostBinMessage(const std::string& msg);
         std::shared_ptr<relay::RelayMessage> ProcessProtoMessage(const std::string& msg);

@@ -106,11 +106,11 @@ namespace tc
             if (tid != post_thread_id_) {
                 LOGI("OH NO! Post binary message in thread: {}, but the last thread is: {}", tid, post_thread_id_);
             }
-
+            LOGI("queued message count: {}", queuing_msg_count_);
             client_->ws_stream().binary(true);
-            queued_msg_count_++;
+            queuing_msg_count_++;
             client_->async_send(msg, [this]() {
-                queued_msg_count_--;
+                queuing_msg_count_--;
             });
         });
     }
@@ -129,9 +129,9 @@ namespace tc
             }
 
             client_->ws_stream().text(true);
-            queued_msg_count_++;
+            queuing_msg_count_++;
             client_->async_send(msg, [this]() {
-                queued_msg_count_--;
+                queuing_msg_count_--;
             });
         });
     }
@@ -182,6 +182,10 @@ namespace tc
 
     void RelayWsClient::SetDeviceNetInfo(const std::vector<tc::RelayDeviceNetInfo>& info) {
         net_info_ = info;
+    }
+
+    int64_t RelayWsClient::GetQueuingMsgCount() {
+        return queuing_msg_count_;
     }
 
 }

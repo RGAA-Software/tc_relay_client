@@ -36,6 +36,7 @@ namespace tc
         void RelayProtoMessage(const std::string& msg);
 
         std::shared_ptr<RelayNetClient> GetNetClient();
+        int64_t GetQueuingMsgCount();
 
         // send from client
         void RequestCreateRoom();
