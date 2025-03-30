@@ -77,6 +77,10 @@ namespace tc
         return ws_client_;
     }
 
+    int64_t RelayClientSdk::GetQueuingMsgCount() {
+        return ws_client_->GetQueuingMsgCount();
+    }
+
     void RelayClientSdk::RelayProtoMessage(const std::string& msg) {
         if (!room_) {
             //LOGE("Can't relay message, room is null.");

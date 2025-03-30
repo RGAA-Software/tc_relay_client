@@ -29,7 +29,7 @@ namespace tc
         void PostBinaryMessage(const std::string& msg) override;
         void PostTextMessage(const std::string& msg) override;
         void SyncDeviceId(const std::string& device_id) override;
-
+        int64_t GetQueuingMsgCount() override;
         void SetDeviceNetInfo(const std::vector<tc::RelayDeviceNetInfo>& info);
 
     private:
@@ -42,7 +42,7 @@ namespace tc
         int port_{0};
         std::string device_id_;
         std::shared_ptr<asio2::ws_client> client_ = nullptr;
-        std::atomic_int queued_msg_count_ = 0;
+        std::atomic_int64_t queuing_msg_count_ = 0;
         unsigned int post_thread_id_ = 0;
         std::vector<tc::RelayDeviceNetInfo> net_info_;
     };

@@ -46,6 +46,10 @@ namespace tc
             msg_cbk_ = cbk;
         }
 
+        virtual int64_t GetQueuingMsgCount() {
+            return 0;
+        }
+
     protected:
         std::function<void(const std::string&)> msg_cbk_;
         OnRelayServerConnected srv_conn_cbk_;

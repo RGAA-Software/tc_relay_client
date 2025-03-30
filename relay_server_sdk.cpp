@@ -181,4 +181,8 @@ namespace tc
         rooms_.Remove(rd.room_id());
         LOGI("ROOM Destroyed: {}", rd.room_id());
     }
+
+    int64_t RelayServerSdk::GetQueuingMsgCount() {
+        return ws_client_->GetQueuingMsgCount();
+    }
 }
