@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <functional>
+#include <atomic>
 #include "relay_callbacks.h"
 #include "relay_server_sdk_param.h"
 #include "tc_common_new/concurrent_hashmap.h"
@@ -56,6 +57,7 @@ namespace tc
         tc::ConcurrentHashMap<std::string, std::shared_ptr<RelayRoom>> rooms_;
         OnRelayRoomPrepared room_prepared_cbk_;
         OnRelayRoomDestroyed room_destroyed_cbk_;
+        std::atomic_uint64_t relay_msg_index_ = 0;
     };
 
 }
