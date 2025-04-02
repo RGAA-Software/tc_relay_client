@@ -92,6 +92,7 @@ namespace tc
         rl_msg.set_from_device_id(sdk_param_.device_id_);
         rl_msg.set_type(RelayMessageType::kRelayTargetMessage);
         auto relay = rl_msg.mutable_relay();
+        relay->set_relay_msg_index(relay_msg_index_++);
         auto room_ids = relay->mutable_room_ids();
         room_ids->Add(room_->room_id_.c_str());
         relay->set_payload(msg);

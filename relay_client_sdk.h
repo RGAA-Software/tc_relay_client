@@ -69,6 +69,7 @@ namespace tc
         RelayClientSdkParam sdk_param_;
         std::shared_ptr<RelayNetClient> ws_client_ = nullptr;
         std::shared_ptr<RelayRoom> room_ = nullptr;
+        std::atomic_uint64_t relay_msg_index_ = 0;
     };
 }
 
