@@ -82,7 +82,8 @@ namespace tc
     }
 
     void RelayClientSdk::RelayProtoMessage(const std::string& msg) {
-        if (!room_) {
+        std::lock_guard<std::mutex> lk(relay_mtx_);
+        if (!room_ || !room_->IsValid()) {
             //LOGE("Can't relay message, room is null.");
             return;
         }
@@ -98,7 +99,7 @@ namespace tc
         relay->set_payload(msg);
 
         this->PostBinMessage(rl_msg.SerializeAsString());
-        //LOGI("Relay from: {} to room: {}", sdk_param_.device_id_, room_->room_id_);
+        //LOGI("Relay from: {} to room: {}, relay index: {}", sdk_param_.device_id_, room_->room_id_, relay_msg_index_);
     }
 
     void RelayClientSdk::PostBinMessage(const std::string& msg) {
@@ -139,8 +140,8 @@ namespace tc
 
     // send from client
     void RelayClientSdk::RequestControl() {
-        if (!room_) {
-            LOGE("Can't request control, room is null.");
+        if (!room_ || !room_->IsValid()) {
+            LOGE("Can't request control, room is not valid!");
             return;
         }
         RelayMessage rl_msg;
@@ -203,7 +204,11 @@ namespace tc
 
     void RelayClientSdk::OnRoomDestroyed(const std::shared_ptr<RelayMessage>& msg) {
         auto rd = msg->room_destroyed();
+        room_->Clear();
+    }
 
+    bool RelayClientSdk::IsInRoom() {
+        return room_ && room_->IsValid();
     }
 
 }

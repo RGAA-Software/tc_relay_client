@@ -94,6 +94,7 @@ namespace tc
     }
 
     void RelayWsClient::PostBinaryMessage(const std::string &msg) {
+        std::lock_guard<std::mutex> guard(send_mtx_);
         if (!IsAlive()) {
             return;
         }
@@ -105,7 +106,7 @@ namespace tc
         if (tid != post_thread_id_) {
             //LOGI("OH NO! Post binary message in thread: {}, but the last thread is: {}", tid, post_thread_id_);
         }
-        //LOGI("queued message count: {}", queuing_msg_count_);
+
         client_->ws_stream().binary(true);
         queuing_msg_count_++;
         client_->async_send(msg, [this]() {

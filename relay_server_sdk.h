@@ -39,6 +39,7 @@ namespace tc
         void SyncDeviceId(const std::string& device_id);
 
         int64_t GetQueuingMsgCount();
+        bool HasRelayRooms();
 
     private:
         void PostBinMessage(const std::string& msg);
@@ -58,6 +59,7 @@ namespace tc
         OnRelayRoomPrepared room_prepared_cbk_;
         OnRelayRoomDestroyed room_destroyed_cbk_;
         std::atomic_uint64_t relay_msg_index_ = 0;
+        std::mutex relay_mtx_;
     };
 
 }
