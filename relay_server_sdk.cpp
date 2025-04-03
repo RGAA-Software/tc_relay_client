@@ -37,6 +37,7 @@ namespace tc
     }
 
     void RelayServerSdk::SetOnDisConnectedCallback(OnRelayServerDisConnected&& cbk) {
+        rooms_.Clear();
         ws_client_->SetOnRelayServerDisConnectedCallback([=, this]() {
             cbk();
         });
@@ -63,6 +64,7 @@ namespace tc
     }
 
     void RelayServerSdk::RelayProtoMessage(const std::string& msg) {
+        std::lock_guard<std::mutex> guard(relay_mtx_);
         if (rooms_.Size() <= 0) {
             return;
         }
@@ -164,6 +166,7 @@ namespace tc
         room->device_id_ = rp.device_id();
         room->remote_device_id_ = rp.remote_device_id();
         rooms_.Insert(room->room_id_, room);
+        LOGI("** OnRoomPrepared: {}", room->room_id_);
     }
 
     void RelayServerSdk::OnRoomInfoChanged(const std::shared_ptr<RelayMessage>& msg) {
@@ -181,10 +184,14 @@ namespace tc
     void RelayServerSdk::OnRoomDestroyed(const std::shared_ptr<RelayMessage>& msg) {
         auto rd = msg->room_destroyed();
         rooms_.Remove(rd.room_id());
-        LOGI("ROOM Destroyed: {}", rd.room_id());
+        LOGI("** OnRoomDestroyed: {}", rd.room_id());
     }
 
     int64_t RelayServerSdk::GetQueuingMsgCount() {
         return ws_client_->GetQueuingMsgCount();
+    }
+
+    bool RelayServerSdk::HasRelayRooms() {
+        return rooms_.Size() > 0;
     }
 }

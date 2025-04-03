@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <functional>
+#include <mutex>
 #include "relay_callbacks.h"
 #include "relay_net_client.h"
 #include "relay_device_info.h"
@@ -45,6 +46,8 @@ namespace tc
         std::atomic_int64_t queuing_msg_count_ = 0;
         unsigned int post_thread_id_ = 0;
         std::vector<tc::RelayDeviceNetInfo> net_info_;
+        std::atomic_int64_t send_index_ = 0;
+        std::mutex send_mtx_;
     };
 
 }

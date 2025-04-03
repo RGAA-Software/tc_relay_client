@@ -56,6 +56,9 @@ namespace tc
         // received from server
         void OnErrorMessage(const std::shared_ptr<relay::RelayMessage>& msg);
 
+        // has relay rooms or not
+        bool IsInRoom();
+
     private:
         void PostBinMessage(const std::string& msg);
         std::shared_ptr<relay::RelayMessage> ProcessProtoMessage(const std::string& msg);
@@ -69,7 +72,8 @@ namespace tc
         RelayClientSdkParam sdk_param_;
         std::shared_ptr<RelayNetClient> ws_client_ = nullptr;
         std::shared_ptr<RelayRoom> room_ = nullptr;
-        std::atomic_uint64_t relay_msg_index_ = 0;
+        std::atomic_int64_t relay_msg_index_ = 0;
+        std::mutex relay_mtx_;
     };
 }
 

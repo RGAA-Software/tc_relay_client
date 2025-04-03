@@ -12,6 +12,10 @@ namespace tc
     // which room I'm in
     class RelayRoom {
     public:
+        bool IsValid() const;
+        void Clear();
+
+    public:
         std::string room_id_;
         // creator
         std::string device_id_;
