@@ -31,6 +31,14 @@ namespace tc
         });
     }
 
+    void RelayClientSdk::SetOnRelayRoomPreparedCallback(OnRelayRoomPrepared&& cbk) {
+        cbk_room_prepared_ = cbk;
+    }
+
+    void RelayClientSdk::SetOnRelayRoomDestroyedCallback(OnRelayRoomDestroyed&& cbk) {
+        cbk_room_destroyed_ = cbk;
+    }
+
     void RelayClientSdk::SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<RelayMessage>&)>&& cbk) {
         ws_client_->SetOnRelayProtoMessageCallback([=, this](const std::string& msg) {
             auto rl_msg = ProcessProtoMessage(msg);
@@ -194,6 +202,10 @@ namespace tc
         room_->device_id_ = rp.device_id();
         room_->remote_device_id_ = rp.remote_device_id();
         LOGI("Room prepared: {}, {} ", room_->device_id_, room_->remote_device_id_);
+
+        if (cbk_room_prepared_) {
+            cbk_room_prepared_();
+        }
     }
 
     void RelayClientSdk::OnRoomInfoChanged(const std::shared_ptr<RelayMessage>& msg) {
@@ -205,10 +217,34 @@ namespace tc
     void RelayClientSdk::OnRoomDestroyed(const std::shared_ptr<RelayMessage>& msg) {
         auto rd = msg->room_destroyed();
         room_->Clear();
+
+        if (cbk_room_destroyed_) {
+            cbk_room_destroyed_();
+        }
     }
 
     bool RelayClientSdk::IsInRoom() {
         return room_ && room_->IsValid();
+    }
+
+    // request pause stream
+    void RelayClientSdk::RequestPauseStream() {
+        if (!room_) {
+            LOGE("Can't request stop, room is null.");
+            return;
+        }
+        RelayMessage rl_msg;
+        rl_msg.set_type(RelayMessageType::kRelayRequestStop);
+        auto sub = rl_msg.mutable_request_stop();
+        sub->set_device_id(sdk_param_.device_id_);
+        sub->set_room_id(room_->room_id_);
+        sub->set_remote_device_id(sdk_param_.remote_device_id_);
+        this->PostBinMessage(rl_msg.SerializeAsString());
+    }
+
+    // request resume stream
+    void RelayClientSdk::RequestResumeStream() {
+
     }
 
 }

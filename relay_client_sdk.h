@@ -31,7 +31,8 @@ namespace tc
         void Stop();
         void SetOnRelayServerConnectedCallback(OnRelayServerConnected&& cbk);
         void SetOnRelayServerDisConnectedCallback(OnRelayServerDisConnected&& cbk);
-        void SetOnRelayProtoMessageCallback(std::function<void(const std::string&)>&& cbk);
+        void SetOnRelayRoomPreparedCallback(OnRelayRoomPrepared&& cbk);
+        void SetOnRelayRoomDestroyedCallback(OnRelayRoomDestroyed&& cbk);
         void SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<relay::RelayMessage>&)>&& cbk);
         void RelayProtoMessage(const std::string& msg);
 
@@ -59,6 +60,12 @@ namespace tc
         // has relay rooms or not
         bool IsInRoom();
 
+        // request pause stream
+        void RequestPauseStream();
+
+        // request resume stream
+        void RequestResumeStream();
+
     private:
         void PostBinMessage(const std::string& msg);
         std::shared_ptr<relay::RelayMessage> ProcessProtoMessage(const std::string& msg);
@@ -74,6 +81,8 @@ namespace tc
         std::shared_ptr<RelayRoom> room_ = nullptr;
         std::atomic_int64_t relay_msg_index_ = 0;
         std::mutex relay_mtx_;
+        OnRelayRoomPrepared cbk_room_prepared_;
+        OnRelayRoomDestroyed cbk_room_destroyed_;
     };
 }
 
