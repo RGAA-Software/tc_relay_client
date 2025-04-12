@@ -63,6 +63,14 @@ namespace tc
         room_destroyed_cbk_ = cbk;
     }
 
+    void RelayServerSdk::SetOnRequestPauseStreamCallback(OnRelayRequestPausedStream&& cbk) {
+        pause_stream_cbk_ = cbk;
+    }
+
+    void RelayServerSdk::SetOnRequestResumeStreamCallback(OnRelayRequestResumeStream&& cbk) {
+        resume_stream_cbk_ = cbk;
+    }
+
     void RelayServerSdk::RelayProtoMessage(const std::string& msg) {
         std::lock_guard<std::mutex> guard(relay_mtx_);
         if (rooms_.Size() <= 0) {
@@ -134,6 +142,16 @@ namespace tc
             this->OnRoomDestroyed(rl_msg);
             if (room_destroyed_cbk_) {
                 room_destroyed_cbk_();
+            }
+        }
+        else if (type == RelayMessageType::kRelayRequestPausedStream) {
+            if (pause_stream_cbk_) {
+                pause_stream_cbk_();
+            }
+        }
+        else if (type == RelayMessageType::kRelayRequestResumeStream) {
+            if (resume_stream_cbk_) {
+                resume_stream_cbk_();
             }
         }
 

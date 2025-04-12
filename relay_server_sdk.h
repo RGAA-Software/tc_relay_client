@@ -33,6 +33,8 @@ namespace tc
         void SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<relay::RelayMessage>&)>&& cbk);
         void SetOnRoomPreparedCallback(OnRelayRoomPrepared&& cbk);
         void SetOnRoomDestroyedCallback(OnRelayRoomDestroyed&& cbk);
+        void SetOnRequestPauseStreamCallback(OnRelayRequestPausedStream&& cbk);
+        void SetOnRequestResumeStreamCallback(OnRelayRequestResumeStream&& cbk);
 
         void RelayProtoMessage(const std::string& msg);
         void RelayProtoMessage(const std::string& stream_id, const std::string& msg);
@@ -58,6 +60,8 @@ namespace tc
         tc::ConcurrentHashMap<std::string, std::shared_ptr<RelayRoom>> rooms_;
         OnRelayRoomPrepared room_prepared_cbk_;
         OnRelayRoomDestroyed room_destroyed_cbk_;
+        OnRelayRequestPausedStream pause_stream_cbk_;
+        OnRelayRequestResumeStream resume_stream_cbk_;
         std::atomic_uint64_t relay_msg_index_ = 0;
         std::mutex relay_mtx_;
     };
