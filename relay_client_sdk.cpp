@@ -230,12 +230,13 @@ namespace tc
     // request pause stream
     void RelayClientSdk::RequestPauseStream() {
         if (!room_) {
-            LOGE("Can't request stop, room is null.");
+            LOGE("Can't request pause stream, room is null.");
             return;
         }
         RelayMessage rl_msg;
-        rl_msg.set_type(RelayMessageType::kRelayRequestStop);
-        auto sub = rl_msg.mutable_request_stop();
+        rl_msg.set_from_device_id(sdk_param_.device_id_);
+        rl_msg.set_type(RelayMessageType::kRelayRequestPausedStream);
+        auto sub = rl_msg.mutable_request_pause();
         sub->set_device_id(sdk_param_.device_id_);
         sub->set_room_id(room_->room_id_);
         sub->set_remote_device_id(sdk_param_.remote_device_id_);
@@ -244,7 +245,19 @@ namespace tc
 
     // request resume stream
     void RelayClientSdk::RequestResumeStream() {
-
+        if (!room_) {
+            LOGE("Can't request resume stream, room is null.");
+            return;
+        }
+        RelayMessage rl_msg;
+        rl_msg.set_from_device_id(sdk_param_.device_id_);
+        rl_msg.set_type(RelayMessageType::kRelayRequestResumeStream);
+        auto sub = rl_msg.mutable_request_resume();
+        sub->set_device_id(sdk_param_.device_id_);
+        sub->set_room_id(room_->room_id_);
+        sub->set_remote_device_id(sdk_param_.remote_device_id_);
+        this->PostBinMessage(rl_msg.SerializeAsString());
+        LOGI("Request resume stream: {}", room_->room_id_);
     }
 
 }
