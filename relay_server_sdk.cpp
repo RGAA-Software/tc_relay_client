@@ -6,6 +6,8 @@
 #include "relay_ws_client.h"
 #include "relay_message.pb.h"
 #include "relay_room.h"
+#include "tc_common_new/time_util.h"
+#include "tc_common_new/md5.h"
 
 using namespace relay;
 
@@ -135,14 +137,14 @@ namespace tc
         else if (type == RelayMessageType::kRelayRoomPrepared) {
             this->OnRoomPrepared(rl_msg);
             if (room_prepared_cbk_) {
-                room_prepared_cbk_();
+                room_prepared_cbk_(rl_msg);
             }
         }
         else if (type == RelayMessageType::kRelayRoomDestroyed) {
-            this->OnRoomDestroyed(rl_msg);
             if (room_destroyed_cbk_) {
-                room_destroyed_cbk_();
+                room_destroyed_cbk_(rl_msg);
             }
+            this->OnRoomDestroyed(rl_msg);
         }
         else if (type == RelayMessageType::kRelayRequestPausedStream) {
             if (pause_stream_cbk_) {
@@ -183,6 +185,8 @@ namespace tc
         room->room_id_ = rp.room_id();
         room->device_id_ = rp.device_id();
         room->remote_device_id_ = rp.remote_device_id();
+        room->created_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
+        room->the_conn_id_ = MD5::Hex(std::format("{}{}", rp.room_id(), room->created_timestamp_));
         rooms_.Insert(room->room_id_, room);
         LOGI("** OnRoomPrepared: {}", room->room_id_);
     }
@@ -211,5 +215,12 @@ namespace tc
 
     bool RelayServerSdk::HasRelayRooms() {
         return rooms_.Size() > 0;
+    }
+
+    std::shared_ptr<RelayRoom> RelayServerSdk::GetRoomById(const std::string& room_id) {
+        if (auto r = rooms_.TryGet(room_id); r.has_value()) {
+            return r.value();
+        }
+        return nullptr;
     }
 }
