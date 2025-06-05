@@ -9,13 +9,18 @@
 #include <memory>
 #include <functional>
 
+namespace relay
+{
+    class RelayMessage;
+}
+
 namespace tc
 {
 
     using OnRelayServerConnected = std::function<void()>;
     using OnRelayServerDisConnected = std::function<void()>;
-    using OnRelayRoomPrepared = std::function<void()>;
-    using OnRelayRoomDestroyed = std::function<void()>;
+    using OnRelayRoomPrepared = std::function<void(const std::shared_ptr<relay::RelayMessage>& msg)>;
+    using OnRelayRoomDestroyed = std::function<void(const std::shared_ptr<relay::RelayMessage>& msg)>;
     using OnRelayRequestPausedStream = std::function<void()>;
     using OnRelayRequestResumeStream = std::function<void()>;
 

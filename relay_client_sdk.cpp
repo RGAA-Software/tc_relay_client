@@ -204,7 +204,7 @@ namespace tc
         LOGI("Room prepared: {}, {} ", room_->device_id_, room_->remote_device_id_);
 
         if (cbk_room_prepared_) {
-            cbk_room_prepared_();
+            cbk_room_prepared_(msg);
         }
     }
 
@@ -219,7 +219,7 @@ namespace tc
         room_->Clear();
 
         if (cbk_room_destroyed_) {
-            cbk_room_destroyed_();
+            cbk_room_destroyed_(msg);
         }
     }
 

@@ -42,6 +42,7 @@ namespace tc
 
         int64_t GetQueuingMsgCount();
         bool HasRelayRooms();
+        std::shared_ptr<RelayRoom> GetRoomById(const std::string& room_id);
 
     private:
         void PostBinMessage(const std::string& msg);
