@@ -74,8 +74,7 @@ namespace tc
     }
 
     void RelayServerSdk::RelayProtoMessage(const std::string& msg) {
-        std::lock_guard<std::mutex> guard(relay_mtx_);
-        if (rooms_.Size() <= 0) {
+        if (rooms_.Size() <= 0 || !IsAlive()) {
             return;
         }
 
@@ -96,7 +95,7 @@ namespace tc
     }
 
     void RelayServerSdk::RelayProtoMessage(const std::string& stream_id, const std::string& msg) {
-        if (rooms_.Size() <= 0) {
+        if (rooms_.Size() <= 0 || !IsAlive()) {
             return;
         }
 
@@ -207,6 +206,10 @@ namespace tc
         auto rd = msg->room_destroyed();
         rooms_.Remove(rd.room_id());
         LOGI("** OnRoomDestroyed: {}", rd.room_id());
+    }
+
+    bool RelayServerSdk::IsAlive() {
+        return ws_client_ && ws_client_->IsAlive();
     }
 
     int64_t RelayServerSdk::GetQueuingMsgCount() {

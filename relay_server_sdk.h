@@ -40,6 +40,7 @@ namespace tc
         void RelayProtoMessage(const std::string& stream_id, const std::string& msg);
         void SyncDeviceId(const std::string& device_id);
 
+        bool IsAlive();
         int64_t GetQueuingMsgCount();
         bool HasRelayRooms();
         std::shared_ptr<RelayRoom> GetRoomById(const std::string& room_id);
@@ -64,7 +65,6 @@ namespace tc
         OnRelayRequestPausedStream pause_stream_cbk_;
         OnRelayRequestResumeStream resume_stream_cbk_;
         std::atomic_uint64_t relay_msg_index_ = 0;
-        std::mutex relay_mtx_;
     };
 
 }

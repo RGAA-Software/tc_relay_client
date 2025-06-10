@@ -32,9 +32,9 @@ namespace tc
         void SyncDeviceId(const std::string& device_id) override;
         int64_t GetQueuingMsgCount() override;
         void SetDeviceNetInfo(const std::vector<tc::RelayDeviceNetInfo>& info);
+        bool IsAlive();
 
     private:
-        bool IsAlive();
         void SendHello();
         void HeartBeat();
 
