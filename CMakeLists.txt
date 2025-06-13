@@ -6,6 +6,7 @@ set(SRCS
         relay_ws_client.cpp
         relay_room.cpp
         relay_server_sdk.cpp
+        relay_api.cpp
 )
 
 add_library(${PROJECT_NAME} ${SRCS})
