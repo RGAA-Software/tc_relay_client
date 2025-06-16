@@ -35,15 +35,15 @@ namespace tc
     void RelayServerSdk::SetOnConnectedCallback(OnRelayServerConnected&& cbk) {
         ws_client_->SetOnRelayServerConnectedCallback([=, this]() {
             cbk();
+            connected_ = true;
         });
-        connected_ = true;
     }
 
     void RelayServerSdk::SetOnDisConnectedCallback(OnRelayServerDisConnected&& cbk) {
-        connected_ = false;
-        rooms_.Clear();
         ws_client_->SetOnRelayServerDisConnectedCallback([=, this]() {
             cbk();
+            connected_ = false;
+            rooms_.Clear();
         });
     }
 
@@ -80,6 +80,7 @@ namespace tc
             return;
         }
 
+        //LOGI("Relay proto message size: {}", msg.size());
         // msg : tc::Message
         // rl_msg : tc::RelayMessage
         RelayMessage rl_msg;
@@ -230,6 +231,7 @@ namespace tc
     }
 
     int RelayServerSdk::GetConnectedPeerCount() {
+        //LOGI("Connected: {}, room size: {}", connected_, rooms_.Size());
         return connected_ && rooms_.Size() > 0 ? 1 : 0;
     }
 

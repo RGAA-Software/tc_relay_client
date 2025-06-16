@@ -159,6 +159,7 @@ namespace tc
         sub->set_remote_device_id(sdk_param_.remote_device_id_);
         sub->set_room_id(room_->room_id_);
         this->PostBinMessage(rl_msg.SerializeAsString());
+        LOGI("Request control: {}", room_->room_id_);
     }
 
     // received from server
@@ -241,6 +242,7 @@ namespace tc
         sub->set_room_id(room_->room_id_);
         sub->set_remote_device_id(sdk_param_.remote_device_id_);
         this->PostBinMessage(rl_msg.SerializeAsString());
+        LOGI("Request pause stream: {}", room_->room_id_);
     }
 
     // request resume stream
