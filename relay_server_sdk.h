@@ -44,6 +44,7 @@ namespace tc
         int64_t GetQueuingMsgCount();
         bool HasRelayRooms();
         std::shared_ptr<RelayRoom> GetRoomById(const std::string& room_id);
+        int GetConnectedPeerCount();
 
     private:
         void PostBinMessage(const std::string& msg);
@@ -65,6 +66,7 @@ namespace tc
         OnRelayRequestPausedStream pause_stream_cbk_;
         OnRelayRequestResumeStream resume_stream_cbk_;
         std::atomic_uint64_t relay_msg_index_ = 0;
+        std::atomic_bool connected_ = false;
     };
 
 }

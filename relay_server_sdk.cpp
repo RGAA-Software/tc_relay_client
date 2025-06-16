@@ -36,9 +36,11 @@ namespace tc
         ws_client_->SetOnRelayServerConnectedCallback([=, this]() {
             cbk();
         });
+        connected_ = true;
     }
 
     void RelayServerSdk::SetOnDisConnectedCallback(OnRelayServerDisConnected&& cbk) {
+        connected_ = false;
         rooms_.Clear();
         ws_client_->SetOnRelayServerDisConnectedCallback([=, this]() {
             cbk();
@@ -226,4 +228,9 @@ namespace tc
         }
         return nullptr;
     }
+
+    int RelayServerSdk::GetConnectedPeerCount() {
+        return connected_ && rooms_.Size() > 0 ? 1 : 0;
+    }
+
 }
