@@ -75,27 +75,27 @@ namespace tc
         resume_stream_cbk_ = cbk;
     }
 
-    void RelayServerSdk::RelayProtoMessage(const std::string& msg) {
-        if (rooms_.Size() <= 0 || !IsAlive()) {
-            return;
-        }
-
-        //LOGI("Relay proto message size: {}", msg.size());
-        // msg : tc::Message
-        // rl_msg : tc::RelayMessage
-        RelayMessage rl_msg;
-        rl_msg.set_from_device_id(sdk_param_.device_id_);
-        rl_msg.set_type(RelayMessageType::kRelayTargetMessage);
-        auto relay = rl_msg.mutable_relay();
-        relay->set_relay_msg_index(relay_msg_index_++);
-        auto room_ids = relay->mutable_room_ids();
-        rooms_.ApplyAll([&](const auto& k, const std::shared_ptr<RelayRoom>& r) {
-            room_ids->Add(r->room_id_.c_str());
-        });
-        relay->set_payload(msg);
-
-        this->PostBinMessage(rl_msg.SerializeAsString());
-    }
+//    void RelayServerSdk::RelayProtoMessage(const std::string& msg) {
+//        if (rooms_.Size() <= 0 || !IsAlive()) {
+//            return;
+//        }
+//
+//        //LOGI("Relay proto message size: {}", msg.size());
+//        // msg : tc::Message
+//        // rl_msg : tc::RelayMessage
+//        RelayMessage rl_msg;
+//        rl_msg.set_from_device_id(sdk_param_.device_id_);
+//        rl_msg.set_type(RelayMessageType::kRelayTargetMessage);
+//        auto relay = rl_msg.mutable_relay();
+//        relay->set_relay_msg_index(relay_msg_index_++);
+//        auto room_ids = relay->mutable_room_ids();
+//        rooms_.ApplyAll([&](const auto& k, const std::shared_ptr<RelayRoom>& r) {
+//            room_ids->Add(r->room_id_.c_str());
+//        });
+//        relay->set_payload(msg);
+//
+//        this->PostBinMessage(rl_msg.SerializeAsString());
+//    }
 
     void RelayServerSdk::RelayProtoMessage(const std::string& stream_id, const std::string& msg) {
         if (rooms_.Size() <= 0 || !IsAlive()) {
@@ -114,10 +114,6 @@ namespace tc
         relay->set_payload(msg);
 
         this->PostBinMessage(rl_msg.SerializeAsString());
-    }
-
-    void RelayServerSdk::SyncDeviceId(const std::string& device_id) {
-        sdk_param_.device_id_ = device_id;
     }
 
     void RelayServerSdk::PostBinMessage(const std::string& msg) {
