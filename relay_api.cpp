@@ -46,7 +46,8 @@ namespace relay
             info->set_relay_server_ip(relay_server_ip);
             info->set_relay_server_port(relay_server_port);
             return info;
-        } catch(...) {
+        } catch(std::exception& e) {
+            LOGE("GetRelayDeviceInfo Exception: {}", e.what());
             return TRError(RelayError::kRelayParseJsonFailed);
         }
     }

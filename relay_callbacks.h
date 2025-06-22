@@ -23,6 +23,7 @@ namespace tc
     using OnRelayRoomDestroyed = std::function<void(const std::shared_ptr<relay::RelayMessage>& msg)>;
     using OnRelayRequestPausedStream = std::function<void()>;
     using OnRelayRequestResumeStream = std::function<void()>;
+    using OnRelayError = std::function<void(const std::shared_ptr<relay::RelayMessage>& msg)>;
 
 }
 
