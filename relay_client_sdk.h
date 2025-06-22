@@ -34,6 +34,7 @@ namespace tc
         void SetOnRelayRoomPreparedCallback(OnRelayRoomPrepared&& cbk);
         void SetOnRelayRoomDestroyedCallback(OnRelayRoomDestroyed&& cbk);
         void SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<relay::RelayMessage>&)>&& cbk);
+        void SetOnRelayErrorCallback(OnRelayError&& cbk);
         void RelayProtoMessage(const std::string& msg);
 
         std::shared_ptr<RelayNetClient> GetNetClient();
@@ -83,6 +84,7 @@ namespace tc
         std::mutex relay_mtx_;
         OnRelayRoomPrepared cbk_room_prepared_;
         OnRelayRoomDestroyed cbk_room_destroyed_;
+        OnRelayError  cbk_relay_error_;
     };
 }
 

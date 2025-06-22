@@ -39,6 +39,10 @@ namespace tc
         cbk_room_destroyed_ = cbk;
     }
 
+    void RelayClientSdk::SetOnRelayErrorCallback(OnRelayError&& cbk) {
+        cbk_relay_error_ = cbk;
+    }
+
     void RelayClientSdk::SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<RelayMessage>&)>&& cbk) {
         ws_client_->SetOnRelayProtoMessageCallback([=, this](const std::string& msg) {
             auto rl_msg = ProcessProtoMessage(msg);
@@ -190,6 +194,9 @@ namespace tc
     void RelayClientSdk::OnErrorMessage(const std::shared_ptr<RelayMessage>& msg) {
         auto re = msg->relay_error();
         LOGI("OnErrorMessage, code: {}, msg: {}, which: {}", (int)re.code(), re.message(), (int)re.which_message());
+        if (cbk_relay_error_) {
+            cbk_relay_error_(msg);
+        }
     }
 
     void RelayClientSdk::OnRoomPrepared(const std::shared_ptr<RelayMessage>& msg) {
