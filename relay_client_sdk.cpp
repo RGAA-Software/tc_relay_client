@@ -43,6 +43,10 @@ namespace tc
         cbk_relay_error_ = cbk;
     }
 
+    void RelayClientSdk::SetOnRelayRemoteDeviceOffline(OnRelayRemoteDeviceOffline&& cbk) {
+        cbk_remote_device_offline_ = cbk;
+    }
+
     void RelayClientSdk::SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<RelayMessage>&)>&& cbk) {
         ws_client_->SetOnRelayProtoMessageCallback([=, this](const std::string& msg) {
             auto rl_msg = ProcessProtoMessage(msg);
@@ -71,6 +75,9 @@ namespace tc
             }
             else if (type == RelayMessageType::kRelayRoomPrepared) {
                 this->OnRoomPrepared(rl_msg);
+            }
+            else if (type == RelayMessageType::kRelayRemoteDeviceOffline) {
+                this->OnRemoteDeviceOffline(rl_msg);
             }
         });
     }
@@ -143,7 +150,9 @@ namespace tc
     // received from server
     void RelayClientSdk::OnCreatedRoomResp(const std::shared_ptr<RelayMessage>& msg) {
         auto cr = msg->create_room_resp();
-        room_ = std::make_shared<RelayRoom>();
+        if (!room_) {
+            room_ = std::make_shared<RelayRoom>();
+        }
         room_->room_id_ = cr.room_id();
         room_->device_id_ = cr.device_id();
         room_->remote_device_id_ = cr.remote_device_id();
@@ -231,6 +240,12 @@ namespace tc
         }
     }
 
+    void RelayClientSdk::OnRemoteDeviceOffline(const std::shared_ptr<relay::RelayMessage>& msg) {
+        if (cbk_remote_device_offline_) {
+            cbk_remote_device_offline_(msg);
+        }
+    }
+
     bool RelayClientSdk::IsInRoom() {
         return room_ && room_->IsValid();
     }
@@ -267,6 +282,12 @@ namespace tc
         sub->set_remote_device_id(sdk_param_.remote_device_id_);
         this->PostBinMessage(rl_msg.SerializeAsString());
         LOGI("Request resume stream: {}", room_->room_id_);
+    }
+
+    void RelayClientSdk::RetryConnection() {
+        if (ws_client_ && ws_client_->IsAlive()) {
+            this->RequestCreateRoom();
+        }
     }
 
 }

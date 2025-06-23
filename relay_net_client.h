@@ -50,6 +50,8 @@ namespace tc
             return 0;
         }
 
+        virtual bool IsAlive() = 0;
+
     protected:
         std::function<void(const std::string&)> msg_cbk_;
         OnRelayServerConnected srv_conn_cbk_;
