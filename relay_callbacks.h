@@ -24,7 +24,7 @@ namespace tc
     using OnRelayRequestPausedStream = std::function<void()>;
     using OnRelayRequestResumeStream = std::function<void()>;
     using OnRelayError = std::function<void(const std::shared_ptr<relay::RelayMessage>& msg)>;
-
+    using OnRelayRemoteDeviceOffline = std::function<void(const std::shared_ptr<relay::RelayMessage>& msg)>;
 }
 
 #endif //GAMMARAY_RELAY_CALLBACKS_H

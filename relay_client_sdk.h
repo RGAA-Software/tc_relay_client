@@ -35,6 +35,7 @@ namespace tc
         void SetOnRelayRoomDestroyedCallback(OnRelayRoomDestroyed&& cbk);
         void SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<relay::RelayMessage>&)>&& cbk);
         void SetOnRelayErrorCallback(OnRelayError&& cbk);
+        void SetOnRelayRemoteDeviceOffline(OnRelayRemoteDeviceOffline&& cbk);
         void RelayProtoMessage(const std::string& msg);
 
         std::shared_ptr<RelayNetClient> GetNetClient();
@@ -67,6 +68,9 @@ namespace tc
         // request resume stream
         void RequestResumeStream();
 
+        // Retry...
+        void RetryConnection();
+
     private:
         void PostBinMessage(const std::string& msg);
         std::shared_ptr<relay::RelayMessage> ProcessProtoMessage(const std::string& msg);
@@ -74,6 +78,7 @@ namespace tc
         void OnRoomPrepared(const std::shared_ptr<relay::RelayMessage>& msg);
         void OnRoomInfoChanged(const std::shared_ptr<relay::RelayMessage>& msg);
         void OnRoomDestroyed(const std::shared_ptr<relay::RelayMessage>& msg);
+        void OnRemoteDeviceOffline(const std::shared_ptr<relay::RelayMessage>& msg);
 
     private:
         std::shared_ptr<RelayContext> context_ = nullptr;
@@ -85,6 +90,7 @@ namespace tc
         OnRelayRoomPrepared cbk_room_prepared_;
         OnRelayRoomDestroyed cbk_room_destroyed_;
         OnRelayError  cbk_relay_error_;
+        OnRelayRemoteDeviceOffline cbk_remote_device_offline_;
     };
 }
 
