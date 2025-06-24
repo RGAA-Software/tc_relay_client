@@ -26,6 +26,7 @@ namespace relay
         }
 
         try {
+            //LOGI("==> RelayDevice body: {}", resp.body);
             auto obj = json::parse(resp.body);
             if (obj["code"].get<int>() != 200) {
                 LOGE("GetDevice info failed: {}", obj["code"]);
