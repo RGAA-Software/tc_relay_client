@@ -22,6 +22,7 @@ namespace tc
     class RelayRoom;
     class RelayContext;
     class RelayWsClient;
+    class RelayConnectedClientInfo;
 
     class RelayServerSdk {
     public:
@@ -43,7 +44,8 @@ namespace tc
         int64_t GetQueuingMsgCount();
         bool HasRelayRooms();
         std::shared_ptr<RelayRoom> GetRoomById(const std::string& room_id);
-        int GetConnectedPeerCount();
+        int GetConnectedClientsCount();
+        std::vector<std::shared_ptr<RelayConnectedClientInfo>> GetConnectedClientInfo();
 
     private:
         void PostBinMessage(const std::string& msg);

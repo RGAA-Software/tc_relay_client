@@ -8,6 +8,7 @@
 #include "relay_room.h"
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/md5.h"
+#include "relay_connected_info.h"
 
 using namespace relay;
 
@@ -226,9 +227,21 @@ namespace tc
         return nullptr;
     }
 
-    int RelayServerSdk::GetConnectedPeerCount() {
+    int RelayServerSdk::GetConnectedClientsCount() {
         //LOGI("Connected: {}, room size: {}", connected_, rooms_.Size());
         return connected_ && rooms_.Size() > 0 ? 1 : 0;
+    }
+
+    std::vector<std::shared_ptr<RelayConnectedClientInfo>> RelayServerSdk::GetConnectedClientInfo() {
+        std::vector<std::shared_ptr<RelayConnectedClientInfo>> clients_info;
+        rooms_.VisitAll([&](std::string k, std::shared_ptr<RelayRoom>& room) {
+            clients_info.push_back(std::make_shared<RelayConnectedClientInfo>(RelayConnectedClientInfo {
+                .room_id_ = room->room_id_,
+                .device_id_ = room->device_id_,
+                .stream_id_ = room->the_conn_id_,
+            }));
+        });
+        return clients_info;
     }
 
 }
