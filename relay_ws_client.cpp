@@ -5,6 +5,7 @@
 #include "relay_ws_client.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/thread_util.h"
+#include "tc_common_new/string_util.h"
 #include <asio2/websocket/ws_client.hpp>
 #include <asio2/asio2.hpp>
 #include "relay_message.pb.h"
@@ -14,10 +15,15 @@ using namespace relay;
 namespace tc
 {
 
-    RelayWsClient::RelayWsClient(const std::string& host, int port, const std::string& device_id) : RelayNetClient() {
+    RelayWsClient::RelayWsClient(const std::string& host, int port, const std::string& device_id,
+                                 const std::string& device_name, const std::string& stream_id)
+                                 : RelayNetClient() {
         this->host_ = host;
         this->port_ = port;
         this->device_id_ = device_id;
+        this->device_name_ = device_name;
+        StringUtil::Replace(this->device_name_, " ", "");
+        this->stream_id_ = stream_id;
     }
 
     RelayWsClient::~RelayWsClient() {
@@ -78,7 +84,7 @@ namespace tc
         });
 
         // the /ws is the websocket upgraged target
-        auto ws_path = std::format("/relay?device_id={}", device_id_);
+        auto ws_path = std::format("/relay?device_id={}&device_name={}&stream_id={}", device_id_, device_name_, stream_id_);
         LOGI("Will connect: {}:{}{}", host_, port_, ws_path);
         if (!client_->async_start(host_, port_, ws_path)) {
             LOGE("connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());

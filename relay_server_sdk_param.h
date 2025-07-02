@@ -19,6 +19,8 @@ namespace tc
         bool ssl_ = false;
         std::string device_id_;
         std::vector<RelayDeviceNetInfo> net_info_;
+        std::string device_name_;
+        std::string stream_id_;
     };
 
 
