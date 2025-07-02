@@ -14,6 +14,7 @@ namespace tc
         std::string room_id_;
         std::string device_id_;
         std::string stream_id_;
+        std::string device_name_;
     };
 }
 

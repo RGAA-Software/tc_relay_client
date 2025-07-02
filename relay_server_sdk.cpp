@@ -17,7 +17,11 @@ namespace tc
 
     RelayServerSdk::RelayServerSdk(const RelayServerSdkParam& param) {
         sdk_param_ = param;
-        ws_client_ = std::make_shared<RelayWsClient>(sdk_param_.host_, sdk_param_.port_, sdk_param_.device_id_);
+        ws_client_ = std::make_shared<RelayWsClient>(sdk_param_.host_,
+                                                     sdk_param_.port_,
+                                                     sdk_param_.device_id_,
+                                                     sdk_param_.device_name_,
+                                                     sdk_param_.stream_id_);
         ws_client_->SetDeviceNetInfo(param.net_info_);
     }
 
@@ -185,7 +189,8 @@ namespace tc
         room->device_id_ = rp.device_id();
         room->remote_device_id_ = rp.remote_device_id();
         room->created_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
-        room->the_conn_id_ = MD5::Hex(std::format("{}{}", rp.room_id(), room->created_timestamp_));
+        room->creator_device_name_ = rp.creator_device_name();
+        room->creator_stream_id_ = rp.creator_stream_id();
         rooms_.Insert(room->room_id_, room);
         LOGI("** OnRoomPrepared: {}", room->room_id_);
     }
@@ -238,7 +243,8 @@ namespace tc
             clients_info.push_back(std::make_shared<RelayConnectedClientInfo>(RelayConnectedClientInfo {
                 .room_id_ = room->room_id_,
                 .device_id_ = room->device_id_,
-                .stream_id_ = room->the_conn_id_,
+                .stream_id_ = room->creator_stream_id_,
+                .device_name_ = room->creator_device_name_,
             }));
         });
         return clients_info;

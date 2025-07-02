@@ -20,6 +20,10 @@ namespace tc
         std::string device_id_;
         // Has value in client
         std::string remote_device_id_;
+        // stream id
+        std::string stream_id_;
+        // device name
+        std::string device_name_;
     };
 
 }

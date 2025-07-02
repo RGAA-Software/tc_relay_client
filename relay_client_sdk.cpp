@@ -14,7 +14,11 @@ namespace tc
 
     RelayClientSdk::RelayClientSdk(const RelayClientSdkParam& param) {
         sdk_param_ = param;
-        ws_client_ = std::make_shared<RelayWsClient>(sdk_param_.host_, sdk_param_.port_, sdk_param_.device_id_);
+        ws_client_ = std::make_shared<RelayWsClient>(sdk_param_.host_,
+                                                     sdk_param_.port_,
+                                                     sdk_param_.device_id_,
+                                                     sdk_param_.device_name_,
+                                                     sdk_param_.stream_id_);
     }
 
     void RelayClientSdk::SetOnRelayServerConnectedCallback(OnRelayServerConnected&& cbk) {
@@ -143,6 +147,8 @@ namespace tc
         auto sub = rl_msg.mutable_create_room();
         sub->set_device_id(sdk_param_.device_id_);
         sub->set_remote_device_id(sdk_param_.remote_device_id_);
+        sub->set_device_name(sdk_param_.device_name_);
+        sub->set_stream_id(sdk_param_.stream_id_);
         this->PostBinMessage(rl_msg.SerializeAsString());
         LOGI("create room sent, device id: {}, remote device id: {}", sdk_param_.device_id_, sdk_param_.remote_device_id_);
     }
@@ -171,6 +177,8 @@ namespace tc
         sub->set_device_id(sdk_param_.device_id_);
         sub->set_remote_device_id(sdk_param_.remote_device_id_);
         sub->set_room_id(room_->room_id_);
+        sub->set_device_name(sdk_param_.device_name_);
+        sub->set_stream_id(sdk_param_.stream_id_);
         this->PostBinMessage(rl_msg.SerializeAsString());
         LOGI("Request control: {}", room_->room_id_);
     }
@@ -218,7 +226,11 @@ namespace tc
         auto rp = msg->room_prepared();
         room_->device_id_ = rp.device_id();
         room_->remote_device_id_ = rp.remote_device_id();
-        LOGI("Room prepared: {}, {} ", room_->device_id_, room_->remote_device_id_);
+        room_->creator_device_id_ = rp.creator_device_id();
+        room_->creator_device_name_ = rp.creator_device_name();
+        room_->creator_stream_id_ = rp.creator_stream_id();
+        LOGI("Room prepared, device id: {}, device id: {}, device name: {}, stream id: {}", room_->device_id_, room_->remote_device_id_,
+             room_->creator_device_name_, room_->creator_stream_id_);
 
         if (cbk_room_prepared_) {
             cbk_room_prepared_(msg);

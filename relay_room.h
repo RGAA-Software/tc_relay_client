@@ -23,8 +23,10 @@ namespace tc
         std::string remote_device_id_;
         //
         int64_t created_timestamp_{0};
-        //
-        std::string the_conn_id_;
+        // creator device id == device id
+        std::string creator_device_id_;
+        std::string creator_device_name_;
+        std::string creator_stream_id_;
     };
 
 }
