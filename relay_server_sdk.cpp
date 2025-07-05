@@ -8,6 +8,7 @@
 #include "relay_room.h"
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/md5.h"
+#include "tc_common_new/data.h"
 #include "relay_connected_info.h"
 
 using namespace relay;
@@ -53,7 +54,7 @@ namespace tc
     }
 
     void RelayServerSdk::SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<RelayMessage>&)>&& cbk) {
-        ws_client_->SetOnRelayProtoMessageCallback([=, this](const std::string& msg) {
+        ws_client_->SetOnRelayProtoMessageCallback([=, this](std::shared_ptr<Data> msg) {
             auto proto_msg = ProcessProtoMessage(msg);
             if (proto_msg) {
                 cbk(proto_msg);
@@ -127,9 +128,9 @@ namespace tc
         }
     }
 
-    std::shared_ptr<RelayMessage> RelayServerSdk::ProcessProtoMessage(const std::string& msg) {
+    std::shared_ptr<RelayMessage> RelayServerSdk::ProcessProtoMessage(std::shared_ptr<Data> msg) {
         auto rl_msg = std::make_shared<RelayMessage>();
-        if (!rl_msg->ParseFromString(msg)) {
+        if (!rl_msg->ParsePartialFromArray(msg->CStr(), msg->Size())) {
             return nullptr;
         }
 

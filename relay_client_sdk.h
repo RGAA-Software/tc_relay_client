@@ -19,6 +19,7 @@ namespace relay
 namespace tc
 {
 
+    class Data;
     class RelayRoom;
     class RelayContext;
     class RelayNetClient;
@@ -73,7 +74,7 @@ namespace tc
 
     private:
         void PostBinMessage(const std::string& msg);
-        std::shared_ptr<relay::RelayMessage> ProcessProtoMessage(const std::string& msg);
+        std::shared_ptr<relay::RelayMessage> ProcessProtoMessage(std::shared_ptr<Data> msg);
 
         void OnRoomPrepared(const std::shared_ptr<relay::RelayMessage>& msg);
         void OnRoomInfoChanged(const std::shared_ptr<relay::RelayMessage>& msg);
