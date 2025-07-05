@@ -3,6 +3,7 @@
 //
 
 #include "relay_ws_client.h"
+#include "tc_common_new/data.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/thread_util.h"
 #include "tc_common_new/string_util.h"
@@ -77,7 +78,7 @@ namespace tc
         }).bind_recv([thiz = std::weak_ptr(shared_from_this())](std::string_view data) {
             if (auto self = thiz.lock(); self && self->client_ && self->msg_cbk_) {
                 if (self->msg_cbk_) {
-                    std::string cpy_data(data.data(), data.size());
+                    auto cpy_data = Data::Make(data.data(), data.size());
                     self->msg_cbk_(cpy_data);
                 }
             }

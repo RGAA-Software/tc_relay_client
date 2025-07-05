@@ -19,6 +19,7 @@ namespace relay
 
 namespace tc
 {
+    class Data;
     class RelayRoom;
     class RelayContext;
     class RelayWsClient;
@@ -49,7 +50,7 @@ namespace tc
 
     private:
         void PostBinMessage(const std::string& msg);
-        std::shared_ptr<relay::RelayMessage> ProcessProtoMessage(const std::string& msg);
+        std::shared_ptr<relay::RelayMessage> ProcessProtoMessage(std::shared_ptr<Data> msg);
         // request to control this device
         void OnRequestControl(const std::shared_ptr<relay::RelayMessage>& msg);
 

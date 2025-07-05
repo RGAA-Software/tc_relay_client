@@ -10,6 +10,8 @@
 namespace tc
 {
 
+    class Data;
+
     class RelayNetClient {
     public:
         virtual ~RelayNetClient() = default;
@@ -42,7 +44,7 @@ namespace tc
             srv_dis_conn_cbk_ = cbk;
         }
 
-        virtual void SetOnRelayProtoMessageCallback(std::function<void(const std::string&)>&& cbk) {
+        virtual void SetOnRelayProtoMessageCallback(std::function<void(std::shared_ptr<Data>)>&& cbk) {
             msg_cbk_ = cbk;
         }
 
@@ -53,7 +55,7 @@ namespace tc
         virtual bool IsAlive() = 0;
 
     protected:
-        std::function<void(const std::string&)> msg_cbk_;
+        std::function<void(std::shared_ptr<Data>)> msg_cbk_;
         OnRelayServerConnected srv_conn_cbk_;
         OnRelayServerDisConnected srv_dis_conn_cbk_;
     };
