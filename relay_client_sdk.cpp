@@ -105,7 +105,7 @@ namespace tc
         return ws_client_->GetQueuingMsgCount();
     }
 
-    void RelayClientSdk::RelayProtoMessage(const std::string& msg) {
+    void RelayClientSdk::RelayProtoMessage(std::shared_ptr<Data> msg) {
         std::lock_guard<std::mutex> lk(relay_mtx_);
         if (!room_ || !room_->IsValid()) {
             //LOGE("Can't relay message, room is null.");
@@ -120,7 +120,7 @@ namespace tc
         relay->set_relay_msg_index(relay_msg_index_++);
         auto room_ids = relay->mutable_room_ids();
         room_ids->Add(room_->room_id_.c_str());
-        relay->set_payload(msg);
+        relay->set_payload(msg->AsString());
 
         this->PostBinMessage(rl_msg.SerializeAsString());
         //LOGI("Relay from: {} to room: {}, relay index: {}", sdk_param_.device_id_, room_->room_id_, relay_msg_index_);
