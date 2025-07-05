@@ -37,7 +37,7 @@ namespace tc
         void SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<relay::RelayMessage>&)>&& cbk);
         void SetOnRelayErrorCallback(OnRelayError&& cbk);
         void SetOnRelayRemoteDeviceOffline(OnRelayRemoteDeviceOffline&& cbk);
-        void RelayProtoMessage(const std::string& msg);
+        void RelayProtoMessage(std::shared_ptr<Data> msg);
 
         std::shared_ptr<RelayNetClient> GetNetClient();
         int64_t GetQueuingMsgCount();
