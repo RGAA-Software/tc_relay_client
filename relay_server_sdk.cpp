@@ -103,8 +103,8 @@ namespace tc
 //        this->PostBinMessage(rl_msg.SerializeAsString());
 //    }
 
-    void RelayServerSdk::RelayProtoMessage(const std::string& stream_id, const std::string& msg) {
-        if (rooms_.Size() <= 0 || !IsAlive()) {
+    void RelayServerSdk::RelayProtoMessage(const std::string& stream_id, std::shared_ptr<Data> msg) {
+        if (rooms_.Size() <= 0 || !IsAlive() || !msg) {
             return;
         }
 
@@ -117,7 +117,7 @@ namespace tc
         rooms_.ApplyAll([&](const auto& k, const std::shared_ptr<RelayRoom>& r) {
             room_ids->Add(r->room_id_.c_str());
         });
-        relay->set_payload(msg);
+        relay->set_payload(msg->AsString());
 
         this->PostBinMessage(rl_msg.SerializeAsString());
     }
