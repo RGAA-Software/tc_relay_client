@@ -39,7 +39,7 @@ namespace tc
         void SetOnRequestResumeStreamCallback(OnRelayRequestResumeStream&& cbk);
 
         //void RelayProtoMessage(const std::string& msg);
-        void RelayProtoMessage(const std::string& stream_id, const std::string& msg);
+        void RelayProtoMessage(const std::string& stream_id, std::shared_ptr<Data> msg);
 
         bool IsAlive();
         int64_t GetQueuingMsgCount();
