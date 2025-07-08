@@ -9,6 +9,7 @@
 #include "tc_common_new/time_util.h"
 #include "tc_common_new/md5.h"
 #include "tc_common_new/data.h"
+#include "tc_common_new/uuid.h"
 #include "relay_connected_info.h"
 
 using namespace relay;
@@ -192,6 +193,7 @@ namespace tc
         room->created_timestamp_ = (int64_t)TimeUtil::GetCurrentTimestamp();
         room->creator_device_name_ = rp.creator_device_name();
         room->creator_stream_id_ = rp.creator_stream_id();
+        room->conn_id_ = MD5::Hex(GetUUID());
         rooms_.Insert(room->room_id_, room);
         LOGI("** OnRoomPrepared: {}", room->room_id_);
     }

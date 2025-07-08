@@ -27,6 +27,10 @@ namespace tc
         std::string creator_device_id_;
         std::string creator_device_name_;
         std::string creator_stream_id_;
+
+        // random id for this connection
+        // 1. used for logging records
+        std::string conn_id_;
     };
 
 }
