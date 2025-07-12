@@ -9,35 +9,38 @@
 
 namespace relay
 {
-    enum class RelayError {
-        kRelayOk,
-        kRelayUnknown,
-        kRelayParseJsonFailed,   // parse json failed
-        kRelayRequestFailed,     // http request failed
-        kRelayJustCodeError,     // code != 200
-        // detail code errors below
-        // kRelay xxx
-        kRelayDataError,         // data is invalid
-    };
 
-    static std::string RelayError2String(const RelayError& err) {
-        if (err == RelayError::kRelayOk) {
+    constexpr int kRelayOk = 200;
+    //
+    constexpr int kRelayParseJsonFailed = 601;
+    constexpr int kRelayRequestFailed = 602;
+    // server resp
+    constexpr int kErrParamInvalid = 700;
+    constexpr int kErrOperateDBFailed = 701;
+    constexpr int kErrRoomNotFound = 702;
+    constexpr int kErrDeviceNotFound = 703;
+
+    static std::string RelayError2String(const int err) {
+        if (err == kRelayOk) {
             return "Ok";
         }
-        else if (err == RelayError::kRelayUnknown) {
-            return "Unknown";
-        }
-        else if (err == RelayError::kRelayParseJsonFailed) {
+        else if (err == kRelayParseJsonFailed) {
             return "Parse json failed";
         }
-        else if (err == RelayError::kRelayRequestFailed) {
+        else if (err == kRelayRequestFailed) {
             return "Network request failed";
         }
-        else if (err == RelayError::kRelayJustCodeError) {
-            return "Code error, != 200";
+        else if (err == kErrParamInvalid) {
+            return "Params invalid";
         }
-        else if (err == RelayError::kRelayDataError) {
-            return "Data error";
+        else if (err == kErrOperateDBFailed) {
+            return "Operate DB Failed";
+        }
+        else if (err == kErrRoomNotFound) {
+            return "Room not found";
+        }
+        else if (err == kErrDeviceNotFound) {
+            return "Device not found";
         }
         else {
             return "Unknown";

@@ -14,23 +14,23 @@ using namespace nlohmann;
 namespace relay
 {
 
-    tc::Result<std::shared_ptr<RelayDeviceInfo>, RelayError> RelayApi::GetRelayDeviceInfo(const std::string& host, int port, const std::string& device_id) {
-        auto client =
-                HttpClient::Make(host, port, kRelayGetDeviceInfo, 3000);
+    tc::Result<std::shared_ptr<RelayDeviceInfo>, int> RelayApi::GetRelayDeviceInfo(const std::string& host, int port, const std::string& device_id) {
+        auto client = HttpClient::Make(host, port, kRelayGetDeviceInfo, 3000);
         auto resp = client->Request({
             {"device_id", device_id},
         });
         if (resp.status != 200 || resp.body.empty()) {
-            LOGE("Request new device failed.");
-            return TRError(RelayError::kRelayRequestFailed);
+            LOGE("Request new device failed : {}", resp.status);
+            return TRError(kRelayRequestFailed);
         }
 
         try {
             //LOGI("==> RelayDevice body: {}", resp.body);
             auto obj = json::parse(resp.body);
-            if (obj["code"].get<int>() != 200) {
-                LOGE("GetDevice info failed: {}", obj["code"]);
-                return TRError(RelayError::kRelayJustCodeError);
+            auto code = obj["code"].get<int>();
+            if (code != 200) {
+                LOGE("GetDevice info failed: {}", code);
+                return TRError(code);
             }
             // "device_local_ips": "110.0.0.16;192.168.56.1;",
             // "relay_server_ip": "139.171.84.236",
@@ -49,7 +49,31 @@ namespace relay
             return info;
         } catch(std::exception& e) {
             LOGE("GetRelayDeviceInfo Exception: {}", e.what());
-            return TRError(RelayError::kRelayParseJsonFailed);
+            return TRError(kRelayParseJsonFailed);
+        }
+    }
+
+    tc::Result<std::string, int> RelayApi::NotifyEvent(const std::string& host, int port, const std::string& device_id, const std::string& event) {
+        auto client = HttpClient::Make(host, port, kRelayNotifyEvent, 3000);
+        auto resp = client->Request({
+                {"device_id", device_id},
+        }, event);
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("Request new device failed.");
+            return TRError(kRelayRequestFailed);
+        }
+
+        try {
+            auto obj = json::parse(resp.body);
+            auto code = obj["code"].get<int>();
+            if (code != 200) {
+                LOGE("GetDevice info failed: {}", obj["code"]);
+                return TRError(code);
+            }
+            return "";
+        } catch(std::exception& e) {
+            LOGE("GetRelayDeviceInfo Exception: {}", e.what());
+            return TRError(kRelayParseJsonFailed);
         }
     }
 
