@@ -26,8 +26,11 @@ namespace relay
 
         // id has prefix, eg: server_xxxx
         // event in json format
-        static tc::Result<std::string, int>
-                NotifyEvent(const std::string& host, int port, const std::string& device_id, const std::string& event);
+        static tc::Result<int, int> NotifyEvent(const std::string& host,
+                                                        int port,
+                                                        const std::string& from_device_id, // this device
+                                                        const std::string& to_device_id,   // remote device, id starts with: server_
+                                                        const std::string& event);
 
         static bool IsRelayDeviceValid(const std::shared_ptr<RelayDeviceInfo>& info);
 
