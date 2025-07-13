@@ -37,8 +37,8 @@ namespace tc
         void SetOnRoomDestroyedCallback(OnRelayRoomDestroyed&& cbk);
         void SetOnRequestPauseStreamCallback(OnRelayRequestPausedStream&& cbk);
         void SetOnRequestResumeStreamCallback(OnRelayRequestResumeStream&& cbk);
+        void SetOnNotificationCallback(OnRelayNotification&& cbk);
 
-        //void RelayProtoMessage(const std::string& msg);
         void RelayProtoMessage(const std::string& stream_id, std::shared_ptr<Data> msg);
 
         bool IsAlive();
@@ -67,6 +67,7 @@ namespace tc
         OnRelayRoomDestroyed room_destroyed_cbk_;
         OnRelayRequestPausedStream pause_stream_cbk_;
         OnRelayRequestResumeStream resume_stream_cbk_;
+        OnRelayNotification notification_cbk_;
         std::atomic_uint64_t relay_msg_index_ = 0;
         std::atomic_bool connected_ = false;
     };
