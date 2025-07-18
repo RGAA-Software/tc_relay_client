@@ -98,9 +98,16 @@ namespace tc
         relay->set_relay_msg_index(relay_msg_index_++);
         auto room_ids = relay->mutable_room_ids();
         rooms_.ApplyAll([&](const auto& k, const std::shared_ptr<RelayRoom>& r) {
-            room_ids->Add(r->room_id_.c_str());
+            if ((stream_id == r->creator_stream_id_ && !stream_id.empty()) || stream_id.empty()) {
+                room_ids->Add(r->room_id_.c_str());
+            }
         });
         relay->set_payload(msg->AsString());
+
+        if (room_ids->empty()) {
+            LOGE("Can't find room for stream: {}", stream_id);
+            return;
+        }
 
         this->PostBinMessage(rl_msg.SerializeAsString());
     }
