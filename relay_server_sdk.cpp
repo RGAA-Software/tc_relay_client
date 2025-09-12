@@ -23,7 +23,8 @@ namespace tc
                                                      sdk_param_.port_,
                                                      sdk_param_.device_id_,
                                                      sdk_param_.device_name_,
-                                                     sdk_param_.stream_id_);
+                                                     sdk_param_.stream_id_,
+                                                     sdk_param_.appkey_);
         ws_client_->SetDeviceNetInfo(param.net_info_);
     }
 

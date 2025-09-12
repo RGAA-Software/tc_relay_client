@@ -24,6 +24,8 @@ namespace tc
         std::string stream_id_;
         // device name
         std::string device_name_;
+        // appkey
+        std::string appkey_;
     };
 
 }

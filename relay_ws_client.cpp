@@ -17,7 +17,8 @@ namespace tc
 {
 
     RelayWsClient::RelayWsClient(const std::string& host, int port, const std::string& device_id,
-                                 const std::string& device_name, const std::string& stream_id)
+                                 const std::string& device_name, const std::string& stream_id,
+                                 const std::string& appkey)
                                  : RelayNetClient() {
         this->host_ = host;
         this->port_ = port;
@@ -25,6 +26,7 @@ namespace tc
         this->device_name_ = device_name;
         StringUtil::Replace(this->device_name_, " ", "");
         this->stream_id_ = stream_id;
+        this->appkey_ = appkey;
     }
 
     RelayWsClient::~RelayWsClient() {
@@ -85,7 +87,8 @@ namespace tc
         });
 
         // the /ws is the websocket upgraged target
-        auto ws_path = std::format("/relay?device_id={}&device_name={}&stream_id={}", device_id_, device_name_, stream_id_);
+        auto ws_path = std::format("/relay?device_id={}&device_name={}&stream_id={}&appkey={}",
+                                   device_id_, device_name_, stream_id_, appkey_);
         LOGI("Will connect: {}:{}{}", host_, port_, ws_path);
         if (!client_->async_start(host_, port_, ws_path)) {
             LOGE("connect websocket server failure : {} {}", asio2::last_error_val(), asio2::last_error_msg().c_str());

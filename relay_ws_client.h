@@ -24,7 +24,8 @@ namespace tc
     class RelayWsClient : public RelayNetClient, public std::enable_shared_from_this<RelayWsClient> {
     public:
         explicit RelayWsClient(const std::string& host, int port, const std::string& device_id,
-                               const std::string& device_name, const std::string& stream_id);
+                               const std::string& device_name, const std::string& stream_id,
+                               const std::string& appkey);
         ~RelayWsClient() override;
         void Start() override;
         void Stop() override;
@@ -45,6 +46,7 @@ namespace tc
         std::string device_id_;
         std::string device_name_;
         std::string stream_id_;
+        std::string appkey_;
         std::shared_ptr<asio2::ws_client> client_ = nullptr;
         std::atomic_int64_t queuing_msg_count_ = 0;
         unsigned int post_thread_id_ = 0;

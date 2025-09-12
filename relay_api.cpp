@@ -14,10 +14,15 @@ using namespace nlohmann;
 namespace relay
 {
 
-    tc::Result<std::shared_ptr<RelayDeviceInfo>, int> RelayApi::GetRelayDeviceInfo(const std::string& host, int port, const std::string& device_id) {
+    tc::Result<std::shared_ptr<RelayDeviceInfo>, int>
+    RelayApi::GetRelayDeviceInfo(const std::string& host,
+                                 int port,
+                                 const std::string& device_id,
+                                 const std::string& appkey) {
         auto client = HttpClient::Make(host, port, kRelayGetDeviceInfo, 3000);
         auto resp = client->Request({
             {"device_id", device_id},
+            {"appkey", appkey}
         });
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("Request new device failed : {}", resp.status);
@@ -54,14 +59,16 @@ namespace relay
     }
 
     tc::Result<int, int> RelayApi::NotifyEvent(const std::string& host,
-                                                       int port,
-                                                       const std::string& from_device_id, // this device
-                                                       const std::string& to_device_id,   // remote device, id starts with: server_
-                                                       const std::string& event) {
+                                               int port,
+                                               const std::string& from_device_id, // this device
+                                               const std::string& to_device_id,   // remote device, id starts with: server_
+                                               const std::string& event,
+                                               const std::string& appkey) {
         auto client = HttpClient::Make(host, port, kRelayNotifyEvent, 3000);
         auto resp = client->Post({
                 {"from_device_id", from_device_id},
                 {"to_device_id", to_device_id},
+                {"appkey", appkey}
         }, event);
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("NotifyEvent failed, host: {}, port: {}, path: {}", host, port, kRelayNotifyEvent);

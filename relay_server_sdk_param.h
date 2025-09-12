@@ -21,6 +21,7 @@ namespace tc
         std::vector<RelayDeviceNetInfo> net_info_;
         std::string device_name_;
         std::string stream_id_;
+        std::string appkey_;
     };
 
 
