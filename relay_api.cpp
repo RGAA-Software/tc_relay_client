@@ -25,8 +25,8 @@ namespace relay
             {"appkey", appkey}
         });
         if (resp.status != 200 || resp.body.empty()) {
-            LOGE("Request new device failed : {}", resp.status);
-            return TRError(kRelayRequestFailed);
+            LOGE("GetRelayDeviceInfo failed : {}", resp.status);
+            return TRError(resp.status);
         }
 
         try {
@@ -72,7 +72,7 @@ namespace relay
         }, event);
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("NotifyEvent failed, host: {}, port: {}, path: {}", host, port, kRelayNotifyEvent);
-            return TRError(kRelayRequestFailed);
+            return TRError(resp.status);
         }
 
         try {
