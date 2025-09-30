@@ -30,11 +30,11 @@ namespace tc
         void Start() override;
         void Stop() override;
         void PostBinaryMessage(const std::string& msg) override;
-        void PostTextMessage(const std::string& msg) override;
         void SyncDeviceId(const std::string& device_id) override;
         int64_t GetQueuingMsgCount() override;
         void SetDeviceNetInfo(const std::vector<tc::RelayDeviceNetInfo>& info);
         bool IsAlive() override;
+        void PostNetTask(std::function<void ()> &&task) override;
 
     private:
         void SendHello();

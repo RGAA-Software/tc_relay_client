@@ -108,23 +108,26 @@ namespace tc
 
     void RelayClientSdk::RelayProtoMessage(std::shared_ptr<Data> msg) {
         std::lock_guard<std::mutex> lk(relay_mtx_);
-        if (!room_ || !room_->IsValid()) {
+        if (!room_ || !room_->IsValid() || !ws_client_) {
             //LOGE("Can't relay message, room is null.");
             return;
         }
-        // msg : tc::Message
-        // rl_msg : tc::RelayMessage
-        RelayMessage rl_msg;
-        rl_msg.set_from_device_id(sdk_param_.device_id_);
-        rl_msg.set_type(RelayMessageType::kRelayTargetMessage);
-        auto relay = rl_msg.mutable_relay();
-        relay->set_relay_msg_index(relay_msg_index_++);
-        auto room_ids = relay->mutable_room_ids();
-        room_ids->Add(room_->room_id_.c_str());
-        relay->set_payload(msg->AsString());
 
-        this->PostBinMessage(rl_msg.SerializeAsString());
-        //LOGI("Relay from: {} to room: {}, relay index: {}", sdk_param_.device_id_, room_->room_id_, relay_msg_index_);
+        ws_client_->PostNetTask([=, this]() {
+            // msg : tc::Message
+            // rl_msg : tc::RelayMessage
+            RelayMessage rl_msg;
+            rl_msg.set_from_device_id(sdk_param_.device_id_);
+            rl_msg.set_type(RelayMessageType::kRelayTargetMessage);
+            auto relay = rl_msg.mutable_relay();
+            relay->set_relay_msg_index(relay_msg_index_++);
+            auto room_ids = relay->mutable_room_ids();
+            room_ids->Add(room_->room_id_.c_str());
+            relay->set_payload(msg->AsString());
+
+            this->PostBinMessage(rl_msg.SerializeAsString());
+            //LOGI("Relay from: {} to room: {}, relay index: {}", sdk_param_.device_id_, room_->room_id_, relay_msg_index_);
+        });
     }
 
     void RelayClientSdk::PostBinMessage(const std::string& msg) {

@@ -52,7 +52,8 @@ namespace tc
                     })
                 );
             }
-        }).bind_connect([thiz = std::weak_ptr(shared_from_this())]() {
+        })
+        .bind_connect([thiz = std::weak_ptr(shared_from_this())]() {
             if (auto self = thiz.lock(); self && self->client_) {
                 if (asio2::get_last_error()) {
                     LOGE("connect failure : {} {} [ {} - {} - {}]",
@@ -67,17 +68,20 @@ namespace tc
                     });
                 }
             }
-        }).bind_disconnect([thiz = std::weak_ptr(shared_from_this())]() {
+        })
+        .bind_disconnect([thiz = std::weak_ptr(shared_from_this())]() {
             if (auto self = thiz.lock(); self && self->client_) {
                 if (self->srv_dis_conn_cbk_) {
                     self->srv_dis_conn_cbk_();
                 }
             }
-        }).bind_upgrade([]() {
+        })
+        .bind_upgrade([]() {
             if (asio2::get_last_error()) {
                 LOGE("upgrade failure : {}, {}", asio2::last_error_val(), asio2::last_error_msg());
             }
-        }).bind_recv([thiz = std::weak_ptr(shared_from_this())](std::string_view data) {
+        })
+        .bind_recv([thiz = std::weak_ptr(shared_from_this())](std::string_view data) {
             if (auto self = thiz.lock(); self && self->client_ && self->msg_cbk_) {
                 if (self->msg_cbk_) {
                     auto cpy_data = Data::Make(data.data(), data.size());
@@ -108,35 +112,7 @@ namespace tc
         if (!IsAlive()) {
             return;
         }
-
-        auto tid = tc::GetCurrentThreadID();
-        if (post_thread_id_ == 0) {
-            post_thread_id_ = tid;
-        }
-        if (tid != post_thread_id_) {
-            //LOGI("OH NO! Post binary message in thread: {}, but the last thread is: {}", tid, post_thread_id_);
-        }
-
         client_->ws_stream().binary(true);
-        queuing_msg_count_++;
-        client_->async_send(msg, [this]() {
-            queuing_msg_count_--;
-        });
-    }
-
-    void RelayWsClient::PostTextMessage(const std::string& msg) {
-        if (!IsAlive()) {
-            return;
-        }
-        auto tid = tc::GetCurrentThreadID();
-        if (post_thread_id_ == 0) {
-            post_thread_id_ = tid;
-        }
-        if (tid != post_thread_id_) {
-            LOGI("OH NO! Post binary message in thread: {}, but the last thread is: {}", tid, post_thread_id_);
-        }
-
-        client_->ws_stream().text(true);
         queuing_msg_count_++;
         client_->async_send(msg, [this]() {
             queuing_msg_count_--;
@@ -192,7 +168,18 @@ namespace tc
     }
 
     int64_t RelayWsClient::GetQueuingMsgCount() {
-        return queuing_msg_count_;
+        if (!IsAlive()) {
+            return 0;
+        }
+        return std::max((int64_t)queuing_msg_count_, (int64_t)client_->get_pending_event_count());
+    }
+
+    void RelayWsClient::PostNetTask(std::function<void ()> &&task) {
+        if (IsAlive()) {
+            client_->post_queued_event([t = std::move(task)]() {
+                t();
+            });
+        }
     }
 
 }

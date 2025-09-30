@@ -88,29 +88,32 @@ namespace tc
     }
 
     void RelayServerSdk::RelayProtoMessage(const std::string& stream_id, std::shared_ptr<Data> msg) {
+        std::lock_guard<std::mutex> guard(relay_mtx_);
         if (rooms_.Size() <= 0 || !IsAlive() || !msg) {
             return;
         }
 
-        RelayMessage rl_msg;
-        rl_msg.set_from_device_id(sdk_param_.device_id_);
-        rl_msg.set_type(RelayMessageType::kRelayTargetMessage);
-        auto relay = rl_msg.mutable_relay();
-        relay->set_relay_msg_index(relay_msg_index_++);
-        auto room_ids = relay->mutable_room_ids();
-        rooms_.ApplyAll([&](const auto& k, const std::shared_ptr<RelayRoom>& r) {
-            if ((stream_id == r->creator_stream_id_ && !stream_id.empty()) || stream_id.empty()) {
-                room_ids->Add(r->room_id_.c_str());
+        ws_client_->PostNetTask([=, this]() {
+            RelayMessage rl_msg;
+            rl_msg.set_from_device_id(sdk_param_.device_id_);
+            rl_msg.set_type(RelayMessageType::kRelayTargetMessage);
+            auto relay = rl_msg.mutable_relay();
+            relay->set_relay_msg_index(relay_msg_index_++);
+            auto room_ids = relay->mutable_room_ids();
+            rooms_.ApplyAll([&](const auto& k, const std::shared_ptr<RelayRoom>& r) {
+                if ((stream_id == r->creator_stream_id_ && !stream_id.empty()) || stream_id.empty()) {
+                    room_ids->Add(r->room_id_.c_str());
+                }
+            });
+            relay->set_payload(msg->AsString());
+
+            if (room_ids->empty()) {
+                LOGE("Can't find room for stream: {}", stream_id);
+                return;
             }
+
+            this->PostBinMessage(rl_msg.SerializeAsString());
         });
-        relay->set_payload(msg->AsString());
-
-        if (room_ids->empty()) {
-            LOGE("Can't find room for stream: {}", stream_id);
-            return;
-        }
-
-        this->PostBinMessage(rl_msg.SerializeAsString());
     }
 
     void RelayServerSdk::PostBinMessage(const std::string& msg) {

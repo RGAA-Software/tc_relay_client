@@ -54,6 +54,8 @@ namespace tc
 
         virtual bool IsAlive() = 0;
 
+        virtual void PostNetTask(std::function<void()>&& task) = 0;
+
     protected:
         std::function<void(std::shared_ptr<Data>)> msg_cbk_;
         OnRelayServerConnected srv_conn_cbk_;

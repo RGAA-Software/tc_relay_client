@@ -68,8 +68,9 @@ namespace tc
         OnRelayRequestPausedStream pause_stream_cbk_;
         OnRelayRequestResumeStream resume_stream_cbk_;
         OnRelayNotification notification_cbk_;
-        std::atomic_uint64_t relay_msg_index_ = 0;
+        std::atomic_int64_t relay_msg_index_ = 0;
         std::atomic_bool connected_ = false;
+        std::mutex relay_mtx_;
     };
 
 }
