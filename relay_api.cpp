@@ -66,12 +66,12 @@ namespace relay
                                                const std::string& appkey) {
         auto client = HttpClient::Make(host, port, kRelayNotifyEvent, 3000);
         auto resp = client->Post({
-                {"from_device_id", from_device_id},
-                {"to_device_id", to_device_id},
-                {"appkey", appkey}
+            {"from_device_id", from_device_id},
+            {"to_device_id", to_device_id},
+            {"appkey", appkey}
         }, event);
         if (resp.status != 200 || resp.body.empty()) {
-            LOGE("NotifyEvent failed, host: {}, port: {}, path: {}", host, port, kRelayNotifyEvent);
+            LOGE("NotifyEvent failed, host: {}, port: {}, path: {}, code: {}", host, port, kRelayNotifyEvent, resp.status);
             return TRError(resp.status);
         }
 
