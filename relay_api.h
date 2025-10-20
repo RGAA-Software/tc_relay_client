@@ -15,11 +15,14 @@ namespace relay
 
     const std::string kRelayGetDeviceInfo = "/query/device";
     const std::string kRelayNotifyEvent = "/notify/event";
+    const std::string kRelayPing = "/ping";
 
     class RelayDeviceInfo;
 
     class RelayApi {
     public:
+        static tc::Result<bool, int> Ping(const std::string& host, int port, const std::string& appkey);
+
         // id has prefix, eg: server_xxxx
         static tc::Result<std::shared_ptr<RelayDeviceInfo>, int>
                 GetRelayDeviceInfo(const std::string& host, int port, const std::string& device_id, const std::string& appkey);
