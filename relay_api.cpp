@@ -54,7 +54,7 @@ namespace relay
             {"appkey", appkey}
         });
         if (resp.status != 200 || resp.body.empty()) {
-            LOGE("GetRelayDeviceInfo failed, status: {}, body: {}", resp.status, resp.body);
+            LOGE("GetRelayDeviceInfo failed, status: {}, body: {}, host: {}:{}, appkey: {}", resp.status, resp.body, host, port, appkey);
             return TRError(resp.status);
         }
 
