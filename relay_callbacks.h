@@ -19,6 +19,8 @@ namespace tc
 
     using OnRelayServerConnected = std::function<void()>;
     using OnRelayServerDisConnected = std::function<void()>;
+    using OnRelayServerHello = std::function<void(const std::string& device_id)>;
+    using OnRelayServerHeartbeat = std::function<void(const std::string& device_id, int64_t hb_index)>;
     using OnRelayRoomPrepared = std::function<void(std::shared_ptr<relay::RelayMessage> msg)>;
     using OnRelayRoomDestroyed = std::function<void(std::shared_ptr<relay::RelayMessage> msg)>;
     using OnRelayRequestPausedStream = std::function<void()>;

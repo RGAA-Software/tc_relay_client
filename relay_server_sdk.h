@@ -32,6 +32,8 @@ namespace tc
         void Stop();
         void SetOnConnectedCallback(OnRelayServerConnected&& cbk);
         void SetOnDisConnectedCallback(OnRelayServerDisConnected && cbk);
+        void SetOnRelayHelloCallback(OnRelayServerHello&& cbk);
+        void SetOnRelayHeartbeatCallback(OnRelayServerHeartbeat&& cbk);
         void SetOnRelayProtoMessageCallback(std::function<void(const std::shared_ptr<relay::RelayMessage>&)>&& cbk);
         void SetOnRoomPreparedCallback(OnRelayRoomPrepared&& cbk);
         void SetOnRoomDestroyedCallback(OnRelayRoomDestroyed&& cbk);
@@ -63,6 +65,8 @@ namespace tc
         RelayServerSdkParam sdk_param_;
         std::shared_ptr<RelayWsClient> ws_client_ = nullptr;
         tc::ConcurrentHashMap<std::string, std::shared_ptr<RelayRoom>> rooms_;
+        OnRelayServerHello hello_cbk_;
+        OnRelayServerHeartbeat heartbeat_cbk_;
         OnRelayRoomPrepared room_prepared_cbk_;
         OnRelayRoomDestroyed room_destroyed_cbk_;
         OnRelayRequestPausedStream pause_stream_cbk_;
