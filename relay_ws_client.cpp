@@ -36,8 +36,8 @@ namespace tc
     void RelayWsClient::Start() {
         client_ = std::make_shared<asio2::ws_client>();
         client_->set_auto_reconnect(true);
-        client_->set_timeout(std::chrono::milliseconds(2000));
-        client_->start_timer("ws-heartbeat", std::chrono::seconds(2), [thiz = std::weak_ptr(shared_from_this())]() {
+        client_->set_timeout(std::chrono::milliseconds(3000));
+        client_->start_timer("ws-heartbeat", std::chrono::seconds(1), [thiz = std::weak_ptr(shared_from_this())]() {
             if (auto self = thiz.lock(); self) {
                 self->HeartBeat();
             }

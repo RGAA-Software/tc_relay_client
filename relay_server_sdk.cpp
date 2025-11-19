@@ -67,6 +67,14 @@ namespace tc
         });
     }
 
+    void RelayServerSdk::SetOnRelayHelloCallback(OnRelayServerHello&& cbk) {
+        hello_cbk_ = cbk;
+    }
+
+    void RelayServerSdk::SetOnRelayHeartbeatCallback(OnRelayServerHeartbeat&& cbk) {
+        heartbeat_cbk_ = cbk;
+    }
+
     void RelayServerSdk::SetOnRoomPreparedCallback(OnRelayRoomPrepared&& cbk) {
         room_prepared_cbk_ = cbk;
     }
@@ -129,6 +137,18 @@ namespace tc
         }
 
         auto type = rl_msg->type();
+        if (type == RelayMessageType::kRelayHello) {
+            //LOGI("**Hello Resp: {}", sdk_param_.device_id_);
+            if (hello_cbk_) {
+                hello_cbk_(sdk_param_.device_id_);
+            }
+        }
+        else if (type == RelayMessageType::kRelayHeartBeat) {
+            //LOGI("**Heartbeat Resp: {}", sdk_param_.device_id_);
+            if (heartbeat_cbk_) {
+                heartbeat_cbk_(sdk_param_.device_id_, rl_msg->heartbeat().index());
+            }
+        }
         if (type == RelayMessageType::kRelayRequestControl) {
             this->OnRequestControl(rl_msg);
         }

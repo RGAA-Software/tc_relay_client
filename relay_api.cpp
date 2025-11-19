@@ -14,6 +14,35 @@ using namespace nlohmann;
 namespace relay
 {
 
+    // Ping
+    tc::Result<bool, int> RelayApi::Ping(const std::string& host, int port, const std::string& appkey) {
+        auto client = HttpClient::Make(host, port, kRelayPing, 3000);
+        auto resp = client->Request({
+            {"appkey", appkey}
+        });
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("GetRelayDeviceInfo failed : {}", resp.status);
+            return TRError(resp.status);
+        }
+
+        // {
+        //     "code": 200,
+        //     "message": "ok",
+        //     "data": "Pong"
+        // }
+        try {
+            auto obj = json::parse(resp.body);
+            auto code = obj["code"].get<int>();
+            auto data = obj["data"].get<std::string>();
+            return code == 200 && data == "Pong";
+        }
+        catch (const std::exception& e) {
+            LOGE("Ping Exception: {}, body: {}", e.what(), resp.body);
+            return TRError(kRelayParseJsonFailed);
+        }
+    }
+
+    //
     tc::Result<std::shared_ptr<RelayDeviceInfo>, int>
     RelayApi::GetRelayDeviceInfo(const std::string& host,
                                  int port,
@@ -25,7 +54,7 @@ namespace relay
             {"appkey", appkey}
         });
         if (resp.status != 200 || resp.body.empty()) {
-            LOGE("GetRelayDeviceInfo failed : {}", resp.status);
+            LOGE("GetRelayDeviceInfo failed, status: {}, body: {}, host: {}:{}, appkey: {}", resp.status, resp.body, host, port, appkey);
             return TRError(resp.status);
         }
 
