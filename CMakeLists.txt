@@ -16,6 +16,6 @@ if(ANDROID)
 else ()
     target_link_libraries(${PROJECT_NAME} tc_relay_message libprotobuf)
     target_link_libraries(${PROJECT_NAME} Qt6::Core Qt6::Core5Compat Qt6::Widgets)
-endif ()
 
-add_subdirectory(test)
+    add_subdirectory(test)
+endif ()
