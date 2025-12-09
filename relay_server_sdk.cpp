@@ -24,7 +24,8 @@ namespace tc
                                                      sdk_param_.device_id_,
                                                      sdk_param_.device_name_,
                                                      sdk_param_.stream_id_,
-                                                     sdk_param_.appkey_);
+                                                     sdk_param_.appkey_,
+                                                     false);
         ws_client_->SetDeviceNetInfo(param.net_info_);
     }
 
@@ -95,6 +96,10 @@ namespace tc
         notification_cbk_ = cbk;
     }
 
+    void RelayServerSdk::SetOnRequestControlCallback(OnRelayRequestControl&& cbk) {
+        req_control_cbk_ = cbk;
+    }
+
     void RelayServerSdk::RelayProtoMessage(const std::string& stream_id, std::shared_ptr<Data> msg) {
         std::lock_guard<std::mutex> guard(relay_mtx_);
         if (rooms_.Size() <= 0 || !IsAlive() || !msg) {
@@ -149,7 +154,11 @@ namespace tc
                 heartbeat_cbk_(sdk_param_.device_id_, rl_msg->heartbeat().index());
             }
         }
+
         if (type == RelayMessageType::kRelayRequestControl) {
+            if (req_control_cbk_) {
+                req_control_cbk_(rl_msg);
+            }
             this->OnRequestControl(rl_msg);
         }
         else if (type == RelayMessageType::kRelayRoomPrepared) {
@@ -189,6 +198,12 @@ namespace tc
             LOGE("My device id: {}, request remote id: {}", sdk_param_.device_id_, rc.remote_device_id());
             return;
         }
+
+        //
+        const auto device_id = rc.device_id();
+        const auto remote_device_id = rc.remote_device_id();
+        const auto room_id = rc.room_id();
+        const auto stream_id = rc.stream_id();
 
         RelayMessage rl_msg;
         rl_msg.set_type(RelayMessageType::kRelayRequestControlResp);

@@ -26,6 +26,8 @@ namespace tc
         std::string device_name_;
         // appkey
         std::string appkey_;
+        // force gdi
+        bool force_gdi_ = false;
     };
 
 }

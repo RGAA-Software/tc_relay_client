@@ -25,7 +25,7 @@ namespace tc
     public:
         explicit RelayWsClient(const std::string& host, int port, const std::string& device_id,
                                const std::string& device_name, const std::string& stream_id,
-                               const std::string& appkey);
+                               const std::string& appkey, bool force_gdi);
         ~RelayWsClient() override;
         void Start() override;
         void Stop() override;
@@ -47,6 +47,7 @@ namespace tc
         std::string device_name_;
         std::string stream_id_;
         std::string appkey_;
+        bool force_gdi_ = false;
         std::shared_ptr<asio2::ws_client> client_ = nullptr;
         std::atomic_int64_t queuing_msg_count_ = 0;
         unsigned int post_thread_id_ = 0;

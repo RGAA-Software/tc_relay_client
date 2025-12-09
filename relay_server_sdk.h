@@ -40,6 +40,7 @@ namespace tc
         void SetOnRequestPauseStreamCallback(OnRelayRequestPausedStream&& cbk);
         void SetOnRequestResumeStreamCallback(OnRelayRequestResumeStream&& cbk);
         void SetOnNotificationCallback(OnRelayNotification&& cbk);
+        void SetOnRequestControlCallback(OnRelayRequestControl&& cbk);
 
         void RelayProtoMessage(const std::string& stream_id, std::shared_ptr<Data> msg);
 
@@ -72,6 +73,7 @@ namespace tc
         OnRelayRequestPausedStream pause_stream_cbk_;
         OnRelayRequestResumeStream resume_stream_cbk_;
         OnRelayNotification notification_cbk_;
+        OnRelayRequestControl req_control_cbk_;
         std::atomic_int64_t relay_msg_index_ = 0;
         std::atomic_bool connected_ = false;
         std::mutex relay_mtx_;

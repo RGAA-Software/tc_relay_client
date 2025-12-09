@@ -18,7 +18,7 @@ namespace tc
 
     RelayWsClient::RelayWsClient(const std::string& host, int port, const std::string& device_id,
                                  const std::string& device_name, const std::string& stream_id,
-                                 const std::string& appkey)
+                                 const std::string& appkey, bool force_gdi)
                                  : RelayNetClient() {
         this->host_ = host;
         this->port_ = port;
@@ -27,6 +27,7 @@ namespace tc
         StringUtil::Replace(this->device_name_, " ", "");
         this->stream_id_ = stream_id;
         this->appkey_ = appkey;
+        this->force_gdi_ = force_gdi;
     }
 
     RelayWsClient::~RelayWsClient() {

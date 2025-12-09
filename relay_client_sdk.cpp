@@ -20,7 +20,8 @@ namespace tc
                                                      sdk_param_.device_id_,
                                                      sdk_param_.device_name_,
                                                      sdk_param_.stream_id_,
-                                                     sdk_param_.appkey_);
+                                                     sdk_param_.appkey_,
+                                                     sdk_param_.force_gdi_);
     }
 
     void RelayClientSdk::SetOnRelayServerConnectedCallback(OnRelayServerConnected&& cbk) {
@@ -183,6 +184,7 @@ namespace tc
         sub->set_room_id(room_->room_id_);
         sub->set_device_name(sdk_param_.device_name_);
         sub->set_stream_id(sdk_param_.stream_id_);
+        sub->set_force_gdi(sdk_param_.force_gdi_);
         this->PostBinMessage(rl_msg.SerializeAsString());
         LOGI("Request control: {}", room_->room_id_);
     }
