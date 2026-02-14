@@ -108,7 +108,7 @@ namespace relay
             auto obj = json::parse(resp.body);
             auto code = obj["code"].get<int>();
             if (code != 200) {
-                LOGE("GetDevice info failed: {}", obj["code"]);
+                LOGE("GetDevice info failed: {}", code);
                 return TRError(code);
             }
             return kRelayOk;
