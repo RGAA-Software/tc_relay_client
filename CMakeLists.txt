@@ -14,7 +14,7 @@ if(ANDROID)
     find_package(Protobuf REQUIRED)
     target_link_libraries(${PROJECT_NAME} tc_relay_message protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite)
 else ()
-    target_link_libraries(${PROJECT_NAME} tc_relay_message libprotobuf)
+    target_link_libraries(${PROJECT_NAME} tc_relay_message protobuf::libprotobuf)
     target_link_libraries(${PROJECT_NAME} Qt6::Core Qt6::Core5Compat Qt6::Widgets)
 
     #add_subdirectory(test)
