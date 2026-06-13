@@ -5,7 +5,7 @@
 #include "relay_api.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/http_client.h"
-#include "tc_3rdparty/json/json.hpp"
+#include <nlohmann/json.hpp>
 #include "relay_message.pb.h"
 
 using namespace tc;
