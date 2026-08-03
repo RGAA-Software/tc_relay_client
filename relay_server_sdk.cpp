@@ -142,6 +142,14 @@ namespace tc
         }
 
         auto type = rl_msg->type();
+        if (type == RelayMessageType::kRelayHello || type == RelayMessageType::kRelayHeartBeat) {
+            // watch the reply chain: a gap > 3.5s turns the panel relay indicator red
+            const auto now = TimeUtil::GetCurrentTimestamp();
+            const auto last = last_alive_resp_ts_.exchange(now);
+            if (last > 0 && now - last > 3500) {
+                LOGW("Relay alive resp gap: {}, gap: {}ms", sdk_param_.device_id_, now - last);
+            }
+        }
         if (type == RelayMessageType::kRelayHello) {
             //LOGI("**Hello Resp: {}", sdk_param_.device_id_);
             if (hello_cbk_) {

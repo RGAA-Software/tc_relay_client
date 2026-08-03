@@ -77,6 +77,9 @@ namespace tc
         std::atomic_int64_t relay_msg_index_ = 0;
         std::atomic_bool connected_ = false;
         std::mutex relay_mtx_;
+        // last timestamp(ms) a heartbeat/hello response was received from server,
+        // used to detect gaps in the relay-alive reply chain (panel indicators)
+        std::atomic_uint64_t last_alive_resp_ts_ = 0;
     };
 
 }
